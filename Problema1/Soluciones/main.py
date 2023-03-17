@@ -1,4 +1,4 @@
-from brute_force import *
+from Soluciones.brute_force import *
 
 if __name__ == "__main__":
     n = input()
@@ -20,5 +20,5 @@ if __name__ == "__main__":
     c = int(input())
     e = int(input())
     m = int(input())
-
+    
     print(brute_force(n, hi, c, e, m))

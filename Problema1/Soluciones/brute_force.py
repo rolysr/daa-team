@@ -10,62 +10,60 @@ def brute_force(n: int, hi: list[int], c: int, e, m) -> int:
 
     min_h = min(hi)
     max_h = max(hi)
-    answer = [math.inf]
+    answer = math.inf
     hi.sort() # sort the heights
 
     for height in range(min_h, max_h + 1):
-        solve(0, n, hi, c, e, m, height, 0, answer)
+        cpy = [x for x in hi]
+        result = solve(n, cpy, c, e, m, height)
+        answer = min(answer, result)
 
-    answer = int(answer[0])
     return answer
 
 
-def solve(s, n, hi, c, e, m, height, current_cost, best):
+def solve(n, hi, c, e, m, height):
     """Solve method"""
+    result = 0
 
-    if s == n:
-        best[0] = min(best[0], current_cost)
-        return
+    for i in range(n):
+        current_height = hi[i]
 
-    current_height = hi[s]
+        if current_height == height:
+            continue
 
-    if current_height == height:
-        solve(s+1, n, hi, c, e, m, height, current_cost, best)
-        return
-
-    elif hi[s] < height:
-        c1 = c*(height - current_height)
-        c2 = math
-        new_hi = deepcopy(hi)
-        if m < c + e:
+        elif current_height < height:
+            c1 = c*(height - current_height)
             c2 = 0
-            for i in range(s + 1, n):
-                next_height = new_hi[i]
-                if next_height > height:
-                    if next_height - height >= new_hi[s]:
-                        c2 += m*(height - new_hi[s])
-                        new_hi[i] = new_hi[i] - (height - new_hi[s])
-                        new_hi[s] = height
-                        break
-                    else:
-                        c2 += m*(next_height - height)
-                        new_hi[s] = new_hi[s] + next_height - height
-                        new_hi[i] = height
-                        if new_hi[s] == height:
+            new_hi = deepcopy(hi)
+            if m < c + e:
+                for j in range(i + 1, n):
+                    next_height = new_hi[j]
+                    if next_height > height:
+                        if next_height - height >= height - new_hi[i]:
+                            c2 += m*(height - new_hi[i])
+                            new_hi[j] = new_hi[j] - (height - new_hi[i])
+                            new_hi[i] = height
                             break
                         else:
-                            continue
+                            c2 += m*(next_height - height)
+                            new_hi[i] = new_hi[i] + next_height - height
+                            new_hi[j] = height
+                            if new_hi[i] == height:
+                                break
 
-        if new_hi[s] == height:
-            current_cost += c2
-            hi = new_hi
+            if new_hi[i] == height:
+                result += c2
+                hi = new_hi
+            else:
+                if c2 + c*(height - new_hi[i]) <= c1:
+                    result += c2 + c*(height - new_hi[i])
+                    hi = new_hi
+                else:
+                    result += c1
+                    hi[i] = height
+
         else:
-            current_cost += c1
-            hi[s] = height
-        solve(s+1, n, hi, c, e, m, height, current_cost, best)
-        return
-
-    else:
-        current_cost += (hi[s] - height)*e
-        hi[s] = height
-        solve(s+1, n, hi, c, e, m, height, current_cost, best)
+            result += (hi[i] - height)*e
+            hi[i] = height
+    
+    return result
