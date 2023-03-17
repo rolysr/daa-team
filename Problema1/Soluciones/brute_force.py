@@ -10,18 +10,25 @@ def brute_force(n: int, hi: list[int], c: int, e, m) -> int:
 
     min_h = min(hi)
     max_h = max(hi)
-    answer = math.inf
+    answer1 = math.inf
+    answer2 = math.inf
     hi.sort() # sort the heights
 
     for height in range(min_h, max_h + 1):
         cpy = [x for x in hi]
-        result = solve(n, cpy, c, e, m, height)
-        answer = min(answer, result)
+        result1 = solve1(n, cpy, c, e, m, height)
+        result2 = solve2(n, hi, c, e, m, height)
 
-    return answer
+        if result1 < answer1:
+            answer1 = result1
+        
+        if result2 < answer2:
+            answer2 = result2
+
+    return answer1, answer2
 
 
-def solve(n, hi, c, e, m, height):
+def solve1(n, hi, c, e, m, height):
     """Solve method"""
     result = 0
 
@@ -66,4 +73,32 @@ def solve(n, hi, c, e, m, height):
             result += (hi[i] - height)*e
             hi[i] = height
     
+    return result
+
+def solve2(n, hi, c, e, m, height):
+    count_ups, count_downs = 0, 0
+    result = 0
+
+    for i in range(n):
+        if hi[i] == height:
+            continue
+
+        if hi[i] < height:
+            count_ups += (height-hi[i])
+        
+        else:
+            count_downs += (hi[i]-height)
+
+    if count_ups == count_downs and m <= c + e:
+        result = count_ups*m
+
+    elif count_ups < count_downs and m <= c + e:
+        result = count_ups*m + (count_downs - count_ups)*e
+
+    elif count_ups > count_downs and m <= c + e:
+        result = count_downs*m + (count_ups - count_downs)*c
+
+    else:
+        result = count_ups*c + count_downs*e
+
     return result
