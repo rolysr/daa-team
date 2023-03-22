@@ -1,5 +1,6 @@
-from tests import check_results
-from brute_force import *
+from Pruebas.tests import check_results
+from Soluciones.greedy2 import *
+
 
 if __name__ == "__main__":
     # n = input()
@@ -22,6 +23,6 @@ if __name__ == "__main__":
     # e = int(input())
     # m = int(input())
     
-    # print(brute_force(n, hi, c, e, m))
+    # print(greedy2(n, hi, c, e, m))
 
     check_results()
