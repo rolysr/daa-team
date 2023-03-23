@@ -52,7 +52,7 @@ def solve(n, hi, c, e, m, height):
                 result += c2
                 hi = new_hi
             else:
-                if new_hi[i] > current_height and new_hi[i] < height and c2 + c*(height - new_hi[i]) <= c1:
+                if new_hi[i] > current_height and new_hi[i] < height and c2 + c*(height - new_hi[i]) <= c1 + e*(new_hi[i]- current_height):
                     result += c2 + c*(height - new_hi[i])
                     hi = new_hi
                     hi[i] = height
