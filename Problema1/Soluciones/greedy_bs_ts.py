@@ -17,7 +17,7 @@ def greedy_bs_ts(n: int, hi: list[int], c: int, e, m) -> int:
     hi_sum = get_sum_array(hi)
 
     for height in range(min_h, max_h + 1):
-        result = solve(0, n-1, n, hi, c, e, m, height)
+        result = solve(0, n-1, n, hi_sum, c, e, m, height)
         answer = min(result, answer)
 
     return answer
@@ -29,5 +29,14 @@ def ts_solve(h1, h2, n, hi_sum, c, e, m):
     mid1 = h1 + (h2 - h1) // 3
     mid2 = h2 - (h2 - h1) // 3
 
-    result_mid1 = solve()
-    result_mid2 = solve()
+    result_mid1 = solve(0, n-1, n, hi_sum, c, e, m, mid1)
+    result_mid2 = solve(0, n-1, n, hi_sum, c, e, m, mid2)
+
+    if result_mid1 == result_mid2:
+        return ts_solve(mid1, mid2, n, hi_sum, c, e, m)
+
+    elif result_mid1 < result_mid2:
+        return ts_solve(h1, mid2, n, hi_sum, c, e, m)
+    
+    else:
+        return ts_solve(mid1, h2, n, hi_sum, c, e, m)

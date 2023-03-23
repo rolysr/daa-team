@@ -1,5 +1,6 @@
 from copy import deepcopy
 from random import randrange
+from Soluciones.greedy_bs_ts import greedy_bs_ts
 from Soluciones.greedy1 import greedy1
 from Soluciones.greedy2 import greedy2
 from Soluciones.greedy_bs import greedy_bs
@@ -15,5 +16,6 @@ def check_results():
         result1 = greedy_bs(n, deepcopy(hi), c, e, m)
         result2 = greedy1(n, deepcopy(hi), c, e, m)
         result3 = greedy2(n, deepcopy(hi), c, e, m)
+        result4 = greedy_bs_ts(n, deepcopy(hi), c, e, m)
 
-        print(result1, result2, result3, "-----", c, e, m, min(hi), max(hi))
+        print(result1, result2, result3, result4)
