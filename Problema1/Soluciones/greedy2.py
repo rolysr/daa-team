@@ -13,8 +13,7 @@ def greedy2(n: int, hi: list[int], c: int, e, m) -> int:
     answer = math.inf
 
     for height in range(min_h, max_h + 1):
-        cpy = [x for x in hi]
-        result = solve(n, cpy, c, e, m, height)
+        result = solve(n, hi, c, e, m, height)
         answer = min(result, answer)
 
     return answer

@@ -12,11 +12,10 @@ def greedy_bs(n: int, hi: list[int], c: int, e, m) -> int:
     max_h = max(hi)
     answer = math.inf
     hi.sort() # sort the heights
+    hi_sum = get_sum_array(hi)
 
     for height in range(min_h, max_h + 1):
-        cpy = [x for x in hi]
-        cpy_sum = get_sum_array(cpy)
-        result = solve(0, n-1, n, cpy_sum, c, e, m, height)
+        result = solve(0, n-1, n, hi_sum, c, e, m, height)
         answer = min(result, answer)
 
     return answer
@@ -60,5 +59,3 @@ def solve(a, b, n, hi_sum, c, e, m, height):
     
     else:
         return solve(a, mid, n, hi_sum, c, e, m, height)
-
-
