@@ -1,3 +1,5 @@
+from random import randrange
+from Pruebas.plotter import plot_problem
 from Pruebas.tests import check_results
 from Soluciones.greedy2 import *
 
@@ -25,4 +27,6 @@ if __name__ == "__main__":
     
     # print(greedy2(n, hi, c, e, m))
 
-    check_results()
+    # check_results()
+
+    plot_problem(20, [randrange(0, 20) for i in range(20)], randrange(0, 20),  randrange(0, 20),  randrange(0, 20))

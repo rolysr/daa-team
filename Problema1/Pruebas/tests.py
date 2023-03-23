@@ -16,5 +16,4 @@ def check_results():
         result2 = greedy1(n, deepcopy(hi), c, e, m)
         result3 = greedy2(n, deepcopy(hi), c, e, m)
 
-        if result1 != result2 or result1 != result3 or result2 != result3:
-            print(result1, result2, result3, "-----", c, e, m, min(hi), max(hi))
+        print(result1, result2, result3, "-----", c, e, m, min(hi), max(hi))
