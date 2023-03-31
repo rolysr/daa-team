@@ -1,7 +1,7 @@
 from random import randrange
 from Soluciones.greedy_bs_ts import greedy_bs_ts
 from Pruebas.plotter import plot_problem
-from Pruebas.tests import check_results
+from Pruebas.algos_output_tester import check_results
 from Soluciones.greedy2 import *
 
 
