@@ -12,7 +12,7 @@ def gbt_or_g2t(n, hi, c, e, m):
     max_hi = max(hi)
     k = max_hi - min_hi
 
-    if n <= k: # O(nlogn + logk*logn)
+    if k > n: # O(nlogn + logk*logn)
         return greedy_bs_ts(n, hi, c, e, m)
     
     # O(nlogk)
