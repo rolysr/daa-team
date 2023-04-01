@@ -20,7 +20,7 @@ def plot_problem(n, hi, c, e, m):
         Y.append(result)
 
     plt.plot(X, Y)
-
+    plt.scatter(X, Y)
     # naming the x axis
     plt.xlabel('Heights - axis')
     # naming the y axis

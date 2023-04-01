@@ -71,7 +71,7 @@ greedy1(n, hi, c, e, m):
 
     return answer
 
-def solve(n, hi, c, e, m, height):
+solve(n, hi, c, e, m, height):
     result = 0
 
     for x in hi:
@@ -88,18 +88,133 @@ def solve(n, hi, c, e, m, height):
 El algoritmo está implementado en [greedy1.py]().
 
 **Complejidad temporal:**
-La complejidad temporal de hallar el máximo y mínimo de $hi$ se puede lograr en $\Omicron{n}$, luego el proceso de ordenamiento de $hi$ se puede lograr en $\Omicron(n\log{n})$ a partir de un ordenamiento con el algoritmo de *Merge Sort*. Por otro lado, el método *solve(...)* se ejecuta en $O(n^2)$ ya que por cada elemento del array $hi$ en la posición $i$, se hacen a lo sumo $n-i$ operaciones buscando los elementos a la derecha con los cuales verificar si es posible realizar las acciones de movimiento, por lo tanto, $solve(...)$ tiene complejidad temporal $O(n^2)$ en el peor caso. Finalmente, dado que por cada altura posible se ejecuta el método $solve(...)$, se cumple que el $for$ que realiza este proceso tiene un costo en el peor caso de $\Omicron{(k)}*\Omicron{(n^2)} = \Omicron{(kn^2)}$. Finalmente, el costo total sería $\Omicron(n + n + n\log{n} + k*n^2) = O(kn^2)$.
-
+La complejidad temporal de hallar el máximo y mínimo de $hi$ se puede lograr en $\Omicron{n}$, luego el proceso de ordenamiento de $hi$ se puede lograr en $\Omicron(n\log{n})$ a partir de un ordenamiento con el algoritmo de *Merge Sort*. Por otro lado, el método *solve(...)* se ejecuta en $O(n^2)$ ya que por cada elemento del array $hi$ en la posición $i$, se hacen a lo sumo $n-i$ operaciones buscando los elementos a la derecha con los cuales verificar si es posible realizar las acciones de movimiento, por lo tanto, $solve(...)$ tiene complejidad temporal $O(n^2)$ en el peor caso. Finalmente, dado que por cada altura posible se ejecuta el método $solve(...)$ y se ejecuta la creación de un array copia de $hi$ en $\Omicron(n)$ (esto es necesario ya que durante el método $solve(...)$ se varía $hi$ para simular las variaciones en las columnas y de esta forma se evita que persistan los cambios una vez se salga del método), se cumple que el $for$ que realiza este proceso tiene un costo en el peor caso de $\Omicron{(k)}*\Omicron{(n + n^2)} = \Omicron{(kn^2)}$. Finalmente, el costo total sería $\Omicron(n + n + n\log{n} + k*n^2) = O(kn^2)$.
 
 ### **2.2) Solución greedy #2:**
+Al analizar el proceso del método $solve(...)$ propuesto, vemos que no es necesario tener que simular todo el proceso *voraz* de realizar las variaciones de alturas ya que si nos fijamos, solo nos interesan las cantidades totales de palitos por debajo y por encima del umbral de una altura pivote $k$, que se quiere "rellenar" o "quitar". Esta idea intuitiva nos permite deducir que, para determinar el costo mínimo de variar las columnas con altura distinta de $k$, debemos pensar en una idea en la que solo necesitemos las unidades de palitos que deben ponerse encima de aquellas columnas debajo del umbral y aquellas que debemos sustraer de forma análoga para las columas encima de este. Como ya demostramos, no tiene sentido variar las columnas con altura igual a la que queremos llegar.
+
+Una vez que tenemos los valores $count_{ups}$ y $count_{downs}$ referentes a las unidades de palitos que deben "rellenarse" y "quitarse" respectivamente, pasamos a analizar otro hecho interesante ya demostrado: el caso donde $m <= c + e$ (el costo de mover es mejor o igual que el costo de quitar y de poner). Es posible demostrar que no tiene sentido usar operaciones de movimiento cuando estas son más costosas que realizar de manera seguida los procesos de quitar y poner palitos y, en caso contrario es conveniente hacer el movimiento siempre que sea posible. Aunque parezca que esto es parecido a la proposicion **$2.1.3)$**, se debe notar que en esta ocasión, se desea dar una respuesta global dadas las cantidades $count_{ups}$ y $count_{downs}$. Por lo que debemos demostrar que:
+
+#### **Proposición 2.2.1)** Sean los valores $count_{ups}$ y $count_{downs}$ calculados:
+1. Si $count_{ups} = count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{ups}*m$.
+2. Si $count_{ups} < count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{ups}*m + (count_{downs} - count_{ups})*e$.
+3. Si $count_{ups} > count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{downs}*m + (count_{ups} - count_{downs})*e$.
+4. En otro caso, el costo mínimo de operaciones es $count_{ups}*c + count_{downs}*e$.
+
+**Demostración:** (Un absurdo para cada uno de los casos)
+
+**Idea general de solución:** 
+Dada la proposición $2.2.1)$, es posible realizar el método $solve(...)$ con un sólo recorrido sobre el arreglo de alturas, además, podemos eliminar el factor de ordenación ya que el cálculo del nuevo método $solve(...)$ es posible con el array $hi$ original. La idea sería hallar los valores $count_{ups}$ y $count_{downs}$ y luego verificar el cumplimiento de las condiciones mencionadas en $2.2.1)$ y devolver como resultado lo correspondiente a aquella que se cumpla.
+
+**Pseudocódigo:**
+```
+greedy2(n, hi, c, e, m):
+    min_h = min(hi)
+    max_h = max(hi)
+    answer = inf
+
+    for height in range(min_h, max_h + 1):
+        result = solve(n, hi, c, e, m, height)
+        answer = min(result, answer)
+
+    return answer
+
+solve(n, hi, c, e, m, height):
+    count_ups, count_downs = compute_count_ups_downs(...)
+    result = 0
+
+    if count_ups == count_downs and m <= c + e:
+        result = count_ups*m
+
+    elif count_ups < count_downs and m <= c + e:
+        result = count_ups*m + (count_downs - count_ups)*e
+
+    elif count_ups > count_downs and m <= c + e:
+        result = count_downs*m + (count_ups - count_downs)*c
+
+    else:
+        result = count_ups*c + count_downs*e
+
+    return result
+```
+El algoritmo está implementado en [greedy2.py]().
+
+**Complejidad temporal:**
+En este caso, se elimina el factor de ordenamiento en $O(n\log{n})$ de la solución anterior y se varía el método $solve(...)$ a una implementación en $O(n)$ ya que en este solo se itera una vez por $hi$ verificando las columnas con altura menor o mayor que $k$ y aumentando o disminuyendo las variables $count_{ups}$ y $count_{downs}$ mientras sea necesario. Finalmente, el algoritmo mejora su complejidad a $O(n*k)$. 
 
 ### **2.3) Solución greedy #2 + Búsqueda ternaria:**
+Una de las grandes interrogantes del problema es si es posible encontrar de forma más eficiente la altura óptima a la cual igualar todas las columnas con el mínimo costo de operaciones posibles. Algunas ideas iniciales erróneas nos hacían pensar que era posible que la altura óptima siempre coincidiría con la altura de alguna columna, algo que logró comprobar como incorrecto a partir de un *script* que generaba casos de prueba y verificaba con los algoritmos anteriores si la altura resultante coincidía con la altura inicial de alguna de las columnas y se notaba que no siempre era cierto.
+
+Una idea interesante para ganar intuición sobre el comportamiento de las alturas con respecto al costo mínimo de igualar todas las columnas de $hi$ a esta es imprimiendo dichos costos uno al lado del otro, representando que el costo $c_i$ era correspondiente a la altura $min_{hi} + i$. Luego, a partir de este experimento notamos que para cada instancia del problema, había una altura a partir de la cual, las soluciones solo empeoraban, incluso, habían casos donde había un cojunto de alturas que eran óptimas. Por lo tanto, sería interesante graficar en un plano de bidimensional los puntos $(h, result)$ donde $h$ es una altura y $result$ es el costo mínimo de llevar las columnas a dicha altura. Para este experimento implementamos un plotter sencillo y estos fueron los resultados para algunas instancias aleatorias del problema:
+
+![img1](img/plot1.png)
+![img1](img/plot2.png)
+![img1](img/plot3.png)
+![img1](img/plot4.png)
+
+A partir de estos experimentos, resulta interesante analizar que estas funciones cumplen que poseen un solo mínimo y en caso de tener más de uno, todos son provenientes de valores consecutivos en el eje de las alturas. Nótese que esta definición es idéntica a la de función unimodal, donde el único extremo en este caso es un mínimo. Por lo tanto debemos demostrar que:
+
+#### **Proposición 2.3.1)**Sea la función $f(h) = r$, donde $h$ es una altura de un rango válido en una instancia del problema Jenga y $r$ es el costo mínimo de igualar todas las alturas de las columnas $hi$ a $h$, esta es unimodal:
+
+**Demostración:** (Usar definición de función unimodal y aplicarla a instancias del problema y analizando casos de acuerdo a las relaciones entre $c$, $e$ y $m$)
+
+Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
+
+#### **Proposición 2.3.2)** la *Búsqueda Ternaria* encuentra correctamente el valor de una función unimodal.
+
+**Demostración:** (Demostrar el algoritmo completo)
+
+**Idea general de solución:** 
+Para solucionar el problema, ahora solo será necesario buscar la altura óptima utilizando el algoritmo de *Búsqueda Ternaria*, luego durante la ejecución de la búsqueda ternaria se ejecuta la solución con el método $solve(...)$ con la mejor complejidad encontrada hasta el momento y se procede a calcular el mínimo número de operaciones para las dos alturas que dividen cada instancia del espacio de búsqueda en tres secciones de igual tamaño. Finalmente, se retorna el mínimo valor al que converja la función unimodal $f(h) = r$ definida anteriormente.
+
+**Pseudocódigo:**
+```
+def greedy2_ts(n: int, hi: list[int], c: int, e, m) -> int:
+
+    min_h = min(hi)
+    max_h = max(hi)
+    answer = math.inf
+    
+    answer = ts_solve(min_h, max_h, n, hi, c, e, m)
+
+    return answer
+
+ts_solve(h1, h2, n, hi, c, e, m):
+    if h1 == h2:
+        return solve(n, hi, c, e, m, h1)
+    
+    elif h2 - h1 == 1:
+        result_h1 = solve(n, hi, c, e, m, h1)
+        result_h2 = solve(n, hi, c, e, m, h2)
+        answer = min(result_h1, result_h2)
+        return answer
+    
+    mid1 = h1 + (h2 - h1) // 3
+    mid2 = h2 - (h2 - h1) // 3
+
+    result_mid1 = solve(n, hi, c, e, m, mid1)
+    result_mid2 = solve(n, hi, c, e, m, mid2)
+
+    if result_mid1 == result_mid2:
+        return ts_solve(mid1, mid2-1, n, hi, c, e, m)
+
+    elif result_mid1 < result_mid2:
+        return ts_solve(h1, mid2-1, n, hi, c, e, m)
+    
+    else:
+        return ts_solve(mid1+1, h2, n, hi, c, e, m)
+```
+El algoritmo está implementado en [greedy2_ts.py]().
+
+**Complejidad temporal:**
+La variación principal de este algoritmo radica en que la complejidad temporal de la búsqueda de la altura 
+óptima y su costo mínimo correspondiente se basa en una búsqueda ternaria con la modificación de que el factor no recursivo de su función $T(n)$ de complejidad temporal ahora es lineal y no constante como en su versión clásica, ya que dicho factor es el producto de ejecutar el método $solve(...)$ en $\Omicron(n)$. Finalmente, se tiene que $T(n) = T(\frac{2n}{3}) + n$ ya que se en cada instancia no base de la *Búsqueda Ternaria*, se realiza un llamado recursivo sobre una sección con tamaño igual a $\frac{2}{3}$ del tamaño del problema en el llamado actual. Por lo tanto, si aplicamos el **Teorema Maestro** vemos que $T(n) \in \Omicron(n\log{k})$, por lo que esta misma sería la complejidad total del algoritmo. 
 
 ### **2.4) Solución óptima para cuando $k >> n$:**
 
 ### **2.5) Solución óptima generalizada:**
  
-## **3) Implementación del proyecto del proyecto:**
+## **3) Implementación del proyecto:**
 
 ### **3.1) Soluciones:**
 
