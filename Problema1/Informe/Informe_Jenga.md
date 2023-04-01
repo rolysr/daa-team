@@ -93,11 +93,11 @@ Caso $m<c+e$ donde hay columnas con altura menor que $k$ y otras con altura mayo
 
 En este caso siempre será óptimo realizar movimientos de palitos de una columna $x$ con altura mayor que $k$ a otra $z$ con altura menor que $k$, en lugar de colocar en $z$ y luego en un futuro eliminar de $x$. Para demostrarlo, es sencillo notar que si se desea incrementar el tamaño de $z$ y tenemos columna/s $x$ con altura mayor que $k$, entonces se podrá decrementar la/s columna/s $x$ en la misma operación. Esto se debe precisamente a que el costo de mover será mejor que colocar y luego eliminar. En caso de que no exista columna $x$ con altura mayor que $k$, solo resta hacer inserciones.
 
-Caso m>c+e:
+Caso $m>c+e$:
 
 Al contrario que en el caso anterior, ahora se puede apreciar que es mejor eliminar un palito de $x$ y luego colocar en $z$, en lugar de mover de una columna a otra. Esto se debe precisamente a los costos de cada operación, donde la suma del costo de eliminar un palito junto a colocar otro, tendrá menor valor que mover de una columna a otra. Por tanto nunca resultará óptimo mover porque el resultado de dicha operación puede ser logrado combinanando las otras dos en un menor costo.
 
-Caso m=c+e:
+Caso $m=c+e$:
 
 Ahora tendremos la posibilidad de escoger cualquiera de los dos procedimientos antes descritos (mover de una columna a otra o colocar un palito en "z" y eliminar en "x") puesto que ambas costarán lo mismo. En nuestros algoritmos decidimos mover en algunos y en otros eliminar y colocar. 
 
@@ -232,47 +232,49 @@ A partir de estos experimentos, resulta interesante analizar que estas funciones
 
 #### **Proposición 2.3.1)** Sea la función $f(h) = r$, donde $h$ es una altura de un rango válido en una instancia del problema Jenga y $r$ es el costo mínimo de igualar todas las alturas de las columnas $hi$ a $h$, esta es unimodal:
 
-**Demostración:** De forma general, una función unimodal de dos dimensiones puede verse como una función con un punto $x$ tal que $f(x)$ es el mínimo (o máximo) de la función y se cumple que $\forall{x'}, x' < x, f(x') \geq f(x)$, y la función es monótona decreciente a la izquierda y $\forall{x'}, x' > x, f(x') \geq f(x)$, y la función es monótona creciente para los valores a la derecha de $x$. Análogamente, esto se cumple para las funciones unimodales con máximo, pero alternado los tipos de monotonía respecto al caso cuando es unimodal de mínimo.
+**Demostración:** 
+
+De forma general, una función unimodal de dos dimensiones puede verse como una función con un punto $x$ tal que $f(x)$ es el mínimo (o máximo) de la función y se cumple que $\forall{x'}, x' < x, f(x') \geq f(x)$, y la función es monótona decreciente a la izquierda y $\forall{x'}, x' > x, f(x') \geq f(x)$, y la función es monótona creciente para los valores a la derecha de $x$. Análogamente, esto se cumple para las funciones unimodales con máximo, pero alternado los tipos de monotonía respecto al caso cuando es unimodal de mínimo.
 
 Para el caso específico de este problema, es necesario demostrar que $f(h) = r$ es una función unimodal de mínimo, es decir, existe una altura para la cual se alcanza el valor óptimo de solución del problema y todas las alturas menores o mayores cumplen que tienen evaluaciones mayores o iguales al valor de la función en dicho punto y a la izquierda de esta, $f$ es decreciente y a su derecha $creciente$.
 
-Por definición del problema, siempre va a existir al menos un punto donde la función alcance su valor óptimo mínimo, esto a que trivialmente pudiéramos iterar por los posibles valores de las alturas dadas y quedarnos con aquel que de como resultado el menor costo de las operaciones para igualar todas las columnas de $hi$ a esta. Ahora, suponiendo la existencia de un mínimo, es evidente que toda altura válida menor o mayor que esta producirá valores mayores iguales al valor óptimo hallado, ya que en caso contrario, la altura denotada como óptima no lo es, ya que existe otra que tiene una evaluación menor. Luego, lo que resulta interesante para demostrar es que la función a la izquierda de $h$ es monótona decreciente y es monótona creciente a la derecha. Para esto vamos a realizar la demostración para el trozo de la función a la izquierda de $h$, comprobando que para todo par de valores consecutivos $h'$ y $h'-1$, se cumple $f(h'-1) \geq f(h')$, sabiendo que ambas evaluaciones son mayores o iguales a $f(h)$.
+Por definición del problema, siempre va a existir al menos un punto donde la función alcance su valor óptimo mínimo, esto ya que trivialmente pudiéramos iterar por los posibles valores de las alturas dadas y quedarnos con aquel que de como resultado el menor costo de las operaciones para igualar todas las columnas de $hi$ a esta. Ahora, suponiendo la existencia de un mínimo, es evidente que toda altura válida menor o mayor que esta producirá valores mayores iguales al valor óptimo hallado, ya que en caso contrario, la altura denotada como óptima no lo es, ya que existe otra que tiene una evaluación menor. Luego, lo que resulta interesante para demostrar es que la función a la izquierda de $h$ es monótona decreciente y la de la derecha, monótona creciente. Para esto vamos a realizar la demostración para el trozo de la función a la izquierda de $h$, comprobando que para todo par de valores consecutivos $h'$ y $h'-1$, se cumple $f(h'-1) \geq f(h')$, sabiendo que ambas evaluaciones son mayores o iguales a $f(h)$.
+
+
 
 Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa el valor de la altura óptima. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
 
 #### **Proposición 2.3.2)** la *Búsqueda Ternaria* encuentra correctamente el valor de una función unimodal.
 
-**Demostración:**  Esta búsqueda tiene la misma idea principal que la búsqueda binaria, que es la idea de ir examinando valores de la función y “descartando” posiciones candidatas en base a la información obtenida.
+**Demostración:**  
 
-Sea $f(x)$ una función unimodal en el intervalo $[l; r]$. Tomamos dos puntos $m1$ y $m2$ en este segmento: $l < m1 < m2 < r$. Entonces, hay tres posibilidades:
+Esta búsqueda tiene la misma idea principal que la **Búsqueda Binaria**, que es la idea de ir examinando valores de la función y “descartando” posiciones candidatas en base a la información obtenida.
 
-- Si $f(m1) < f(m2)$, entonces el máximo requerido no puede ubicarse en el lado izquierdo - $[l; m1]$. Esto significa que el máximo debe buscarse en el intervalo $[m1;r]$.
-- Si $f(m1) > f(m2)$, de manera similar al anterior caso. Ahora, el máximo requerido no puede estar en el lado derecho - $[m2; r]$, así que debe buscarse en el segmento $[l; m2]$.
+Sea $f(x)$ una función unimodal en el intervalo $[a; b]$. Tomamos dos puntos $m1$ y $m2$ en este segmento: $a < m1 < m2 < b$. Entonces, hay tres posibilidades:
+
+- Si $f(m1) < f(m2)$, entonces el máximo requerido no puede ubicarse en el lado izquierdo - $[a; m1]$. Esto significa que el máximo debe buscarse en el intervalo $[m1;b]$.
+- Si $f(m1) > f(m2)$, de manera similar al anterior caso. Ahora, el máximo requerido no puede estar en el lado derecho - $[m2; b]$, así que debe buscarse en el segmento $[a; m2]$.
 - Si $f(m1) = f(m2)$, entonces la búsqueda debe realizarse e $[m1; m2]$, pero este caso se puede atribuir a cualquiera de los dos anteriores (para simplificar el código). Tarde o temprano, la longitud del segmento será un poco menor que una constante predeterminada, y el proceso podrá detenerse.
 
 En cada paso, tendremos entonces dos extremos $a$
 y $b$, y lo que sabemos en todo momento es que el mínimo que estamos buscando está dentro de este intervalo. Es decir, una posición con el valor mínimo que buscamos se encuentra seguro en $[a,b)$. Al final, cuando tengamos $b=a+1$, es decir, cuando tengamos un intervalo de longitud $1$, habremos localizado el mínimo.
 
-La gran diferencia está en que búsqueda binaria en cada paso examina la situación en la posición central, separando todo el intervalo que estamos analizando en dos partes. La búsqueda ternaria, como sugiere su nombre, separa el intervalo en tres partes, y para ello examina el valor de la función en los dos puntos de división entre las partes.
-
-Es decir, vamos a examinar dos posiciones dentro de nuestro intervalo, $m1$ y $m2$, con $a≤m1<m2<b$.
+La gran diferencia está en que la **Búsqueda Binaria** en cada paso examina la situación en la posición central, separando todo el intervalo que estamos analizando en dos partes. La **Búsqueda Ternaria**, como sugiere su nombre, separa el intervalo en tres partes, y para ello examina el valor de la función en los dos puntos de división entre las partes. Es decir, vamos a examinar dos posiciones dentro de nuestro intervalo, $m1$ y $m2$, con $a≤m1<m2<b$.
 
 Si $f(m1)≤f(m2)$, sabemos que necesariamente $m2$ ya pasó la primera parte inicial, en la que la función decrece estrictamente: si no fuera así, la función decrecería siempre estrictamente entre $m1$ y $m2$, y sería imposible observar lo que estamos observando. Por lo tanto, como el valor mínimo que buscamos se puede encontrar siempre en el último punto de la parte decreciente, y este está más a la izquierda que $m2$, asignaremos $b=m2$. Observemos que no podemos asignar $b$ a nada más pequeño con seguridad: podría ser que el mínimo estuviera de hecho en $m2−1$, y que la razón por la que vemos que $f(m1)<f(m2)$ fuera que la función tenga un aumento enorme entre $m2−1$ y $m2$, que supere todo lo que venía bajando desde $m1$ hasta $m2−1$.
 
 Si $f(m1)>f(m2)$, con un razonamiento análogo podemos deducir que m1 está todavía estrictamente dentro de la primera parte, en la que la función está decreciendo estrictamente (pues sino, la función nunca decrecería entre $m1$ y $m2$), y entonces podemos poner $a=m1+1$, ya que el mínimo tiene que estar sí o sí más a la derecha que $m1$. No podemos poner a en nada más grande, ya que podría pasar que el máximo esté en efecto en $m1+1$: por ejemplo, eso ocurriría si la razón por la que es $f(m1)>f(m2)$ fuera que la función tiene un enorme decrecimiento entre $m1$ y $m1+1$, que compense lo que luego sube desde $m1+1$ hasta $m2$.
 
-Para elegir $m1$ y $m2$, partimos al intervalo $[a,b)$ en tres, tomando: $m1=a+⌊b−a3⌋$, $m2=a+⌊2(b−a)3⌋$
-
-Si $b−a>1$, estos dos valores $m1$ y $m2$ son siempre distintos entre sí, y caen dentro del rango $[a,b)$. Además, estando $m1$ y $m2$ dentro del rango, los reemplazos $a=m1+1$ y $b=m2$ siempre achican el rango, así que el procedimiento va a llegar en algún momento a tener un rango de un único elemento, que será el mínimo. 
+Para elegir $m1$ y $m2$, partimos al intervalo $[a,b)$ en tres, tomando: $m1=a+⌊b−a3⌋$, $m2=a+⌊2(b−a)3⌋.$ Si $b−a>1$, estos dos valores $m1$ y $m2$ son siempre distintos entre sí, y caen dentro del rango $[a,b)$. Además, estando $m1$ y $m2$ dentro del rango, los reemplazos $a=m1+1$ y $b=m2$ siempre achican el rango, así que el procedimiento va a llegar en algún momento a tener un rango de un único elemento, que será el mínimo. 
 
 Por lo tanto, de esta forma tenemos demostrada la proposición.
 
 **Idea general de solución:** 
-Para solucionar el problema, ahora solo será necesario buscar la altura óptima utilizando el algoritmo de *Búsqueda Ternaria*, luego durante la ejecución de la búsqueda ternaria se ejecuta la solución con el método $solve(...)$ con la mejor complejidad encontrada hasta el momento y se procede a calcular el mínimo número de operaciones para las dos alturas que dividen cada instancia del espacio de búsqueda en tres secciones de igual tamaño. Finalmente, se retorna el mínimo valor al que converja la función unimodal $f(h) = r$ definida anteriormente.
+Para solucionar el problema, ahora solo será necesario buscar la altura óptima utilizando el algoritmo de *Búsqueda Ternaria*, luego durante la ejecución de la **Búsqueda Ternaria** se ejecuta la solución con el método $solve(...)$ con la mejor complejidad encontrada hasta el momento y se procede a calcular el mínimo número de operaciones para las dos alturas que dividen cada instancia del espacio de búsqueda en tres secciones de igual tamaño. Finalmente, se retorna el mínimo valor al que converja la función unimodal $f(h) = r$ definida anteriormente.
 
 **Pseudocódigo:**
 ```
-def greedy2_ts(n: int, hi: list[int], c: int, e, m) -> int:
+greedy2_ts(n: int, hi: list[int], c: int, e, m) -> int:
 
     min_h = min(hi)
     max_h = max(hi)
@@ -311,7 +313,7 @@ El algoritmo está implementado en [greedy2_ts.py]().
 
 **Complejidad temporal:**
 La variación principal de este algoritmo radica en que la complejidad temporal de la búsqueda de la altura 
-óptima y su costo mínimo correspondiente se basa en una búsqueda ternaria con la modificación de que el factor no recursivo de su función $T(n)$ de complejidad temporal ahora es lineal y no constante como en su versión clásica, ya que dicho factor es el producto de ejecutar el método $solve(...)$ en $\Omicron(n)$. Finalmente, se tiene que $T(n) = T(\frac{2n}{3}) + n$ ya que se en cada instancia no base de la *Búsqueda Ternaria*, se realiza un llamado recursivo sobre una sección con tamaño igual a $\frac{2}{3}$ del tamaño del problema en el llamado actual. Por lo tanto, si aplicamos el **Teorema Maestro** vemos que $T(n) \in \Omicron(n\log{m})$, por lo que esta misma sería la complejidad total del algoritmo.  
+óptima y su costo mínimo correspondiente se basa en una **Búsqueda Ternaria** con la modificación de que el factor no recursivo de su función $T(n)$ de complejidad temporal ahora es lineal y no constante como en su versión clásica, ya que dicho factor es el producto de ejecutar el método $solve(...)$ en $\Omicron(n)$. Finalmente, se tiene que $T(n) = T(\frac{2n}{3}) + n$ ya que en cada instancia no base de la *Búsqueda Ternaria*, se realiza un llamado recursivo sobre una sección con tamaño igual a $\frac{2}{3}$ del tamaño del problema en el llamado actual. Por lo tanto, si aplicamos el **Teorema Maestro** vemos que $T(n) \in \Omicron(n\log{m})$, por lo que esta misma sería la complejidad total del algoritmo.  
 
 ### **2.4) Solución óptima para cuando $m >> n$:**
 En las soluciones anteriores no hemos tenido en cuenta qué relación puede haber entre el tamaño del espacio de búsqueda de la altura óptima y el tamaño del array $hi$. Es decir, nuestras ideas son independientes a si $m$ es mayor o menor que $n$. Por lo tanto, nuestro objetivo consiste en separar el problema en los casos en que $n \geq m$ y $n < m$. Intuitivamente, para lograr una mejora con respecto al segundo caso ($n < m$) necesitaríamos hacer que la complejidad temporal total sea menor que $\Omicron{(n\log{m})}$, lo cual solo se lograría si pudieramos expresar dicha complejidad en función de términos o factores menores que $\Omicron{(n\log{m})}$, es decir, lograr que la nueva complejidad tenga la forma $\sum{t_i}$ donde $t_i < n\log{m}$.
@@ -423,10 +425,25 @@ El algoritmo está implementado en [gbt_or_g2t.py]().
 Ahora, debido a la propuesta anterior, debemos notar que el algoritmo es en general $\Omicron{(min(n\log{m}, n\log{n} + \log{n}\log{m}))}$ dado que tiene complejidad $\Omicron(n\log{m})$ o $\Omicron(n\log{n} + \log{n}\log{m})$ en caso de que $n n \geq m$ o $m > n$ respectivamente.
 
 ## **3) Implementación del proyecto:**
-El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
+El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar. 
+
+Para ejecutar el proyecto sólo es necesario ejecutar el archivo $main.py$ el cual por defecto tiene la implementación para hallar la solución de una instancia del problema. Una vez ejecutamos este script se requiere entrar un valor $n$ entero que represente el número de columnas $hi$, luego en la siguiente línea se deben escribir $n$ valores correspondientes a las alturas de las columnas de $hi$, luego en las siguientes tres líneas se procede a entrar los valores de costo $c, e$ y $m$. Finalmente al presionar $enter$ de devuelve la respuesta al problema: el costo mínimo de llevar todas las columnas a una misma altura utilizando las operaciones predefinidas. A continuación se muestra un ejemplo de flujo de entrada y salida por consola:
+```
+Input:
+6
+7 11 8 2 10 4
+2
+3
+3
+```
+```
+Output:
+24
+```
+
 - **Soluciones:**
 En esta carpeta se encuentran las distintas soluciones probadas para resolver el problema planteado. Todas contienen en esencia un método principal que recibe una entrada en el formato $n, hi, c, e, m$ donde $n$ es la cantidad de columnas, $hi$ es el array de tamaño $n$ de las alturas de las columnas de palitos y $c, e$ y $m$ son los costos de las operaciones de colocar, quitar y mover respectivamente. Como salida de estos métodos principales se da un entero que representa el costo mínimo de igualar todas las alturas de las columnas en $hi$ con las operaciones predefinidas.
 
 - **Informe:** Constituye el resumen de los experimentos llevados a cabo en el proyecto y contiene las demostraciones que prueban la correctitud de los mismos.
 
-- **Pruebas:** Contiene el script [plotter.py](), el cual fue utilizado para comprobar la propiedad fundamental que justifica el funcionamiento de la solución $2.3)$ y el script [algos_output_tester.py](), el cual genera casos de prueba aleatorios y compara las salidas de las soluciones implementadas y comprueba la igualdad en la salida de estas para mostrar su equivalencia. 
+- **Pruebas:** Contiene el script [plotter.py](), el cual fue utilizado para comprobar la propiedad fundamental que justifica el funcionamiento de la solución $2.3)$ y el script [algos_output_tester.py](), el cual genera casos de prueba aleatorios y compara las salidas de las soluciones implementadas y comprueba la igualdad en la salida de estas para mostrar su equivalencia. También se incluyó el archivo [tester.py]() que contiene la función *test_solution(...)* que recibe de entrada una función que resuelve el problema y se desea evaluar y luego se comparan las respuestas de esta con las del método de solución *greedy2(...)* y finalmente se da como retorno "Accepted!!" si coincidieron todas las respuestas y "Wrong Answer!!" en caso contrario. 
