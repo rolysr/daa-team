@@ -38,7 +38,54 @@ Luego, sería interesante analizar cual es la mejor manera de distribuir accione
 
 **Demostración:** (Demostrar con un análisis de casos y absurdos.)
 
-Ahora, en el caso en que lleguemos a una columna con altura $hi_i > k$, dado que solo tiene sentido que esta disminuya su tamaño, las posibles operaciones a realizar son quitar un palito y disminuir su altura (con costo $e$), o mover el palito más arriba de esta hacia la parte superior de otra columna. Sucede que lo mejor que se puede hacer sobre una altura
+Ahora, en el caso en que lleguemos a una columna con altura $hi_i > k$, dado que solo tiene sentido que esta disminuya su tamaño, las posibles operaciones a realizar son quitar un palito y disminuir su altura (con costo $e$), o mover el palito más arriba de esta hacia la parte superior de otra columna (con costo $m$). Sucede que lo mejor que se puede hacer sobre una columna con estas características es algo análogo a la proposición $2.1.3)$ pero sucede que esto no nos dice mucho, ya que no nos permite converger a una metodología para saber qué hacer cuando llegamos a una columna de este estilo, dado el procedimiento mencionado con dicha proposición para ajustar la altura de aquellas columnas por debajo del umbral $k$.
+
+Debido a estas ideas anteriores, vemos que existe un problema a la hora de decidir de qué forma podemos encontrar para una columna con altura inferior a la altura pivote (en el caso de que sea mejor realizar acciones de movimiento) aquellas columnas con tamaño superior (análogamente para una columna encima del umbral y que haga falta hallar otra por debajo para hacer acciones de movimiento), tal que puedan servir para quitarle palitos que participen en dicha acción. Existen una idea directa que consiste en recorrer todo el array $hi$ de solo hacia la derecha y determinar aquellas que están por encima del umbral e ir quitándole los palitos necesarios hasta que sea posible. Por otro lado, si llegamos a una columna encima del umbral, vemos que debemos ver a la derecha, en caso de ser necesarias acciones de movimiento, cuáles están debajo del umbral. La idea de por qué funciona es por el principio básico de que estamos iterando de izquierda a derecha, llevando todas las alturas al umbral deseado, por lo que a la izquierda de la columna que se analiza en un momento dado solo habrán alturas igualadas al umbral y a la derecha alturas que puedan estar encima, debajo o al mismo nivel. Intuitivamente lo que estamos haciendo es nivelando de izquierda a derecha las alturas, por esto podemos argumentar la idea anterior.
+
+Una propuesta para simplificar la forma de operar sobre las columnas es si las ordenáramos inicialmente, luego, al iterar por cada una vemos que una vez que logremos nivelar las alturas menores al umbral mediante el procedimiento de la proposición **2.1.3)**, al llegar a las alturas por encima del umbral sólo sería ncesario que estas disminuyan su altura. Por lo tanto, es necesario probar que:
+
+#### **Proposición 2.1.4)** Si se aplicara el algoritmo de iterar por cada columna nivelándola a una altura pivote $k$ aplicando el procedimiento de la proposición $2.1.3)$ y haciendo este de forma análoga para cuando $hi_i > k$. Entonces, el resultado es equivalente a cuando lo hacemos sobre el array ordenado y cuando una columna cumple que su altura es $hi_i > k$, solo es necesario realizar operaciones de quitar palitos.
+
+**Demostración:** (Rellenar).
+
+Finalmente, gracias a las proposiciones anteriores, el siguiente algoritmo ofrece la respuesta al problema planteado:
+
+**Idea general de solución:** 
+Dado un array de enteros $hi$ de tamaño $n$ y costos $c$, $e$ y $m$ almacenamos en $min_{hi}$ y $max_{hi}$ las alturas mínima y máxima en el array. Luego, ordenamos $hi$ en orden creciente. Posteriormente, para cada posible altura $min_{hi} \leq k \leq max_{hi}$ ejecutamos el procedimiento descrito anteriormente para cada columna $i$:
+- Si $hi_i = k$ no se hace nada.
+- Si $hi_i < k$, agregamos a la solución global para la altura $k$ el mínimo entre los procedimientos mencionados en $2.1.3)$.
+- Si $hi_i > k$, solo agregamos a la solución global para $k$ el costo de bajar la columna con operaciones de quitar (con costo $e$) exclusivamente.
+
+**Pseudocódigo:**
+```
+greedy1(n, hi, c, e, m):
+    min_h = min(hi)
+    max_h = max(hi)
+    answer = inf
+    hi.sort() # sort the heights
+
+    for height in range(min_h, max_h + 1):
+        cpy = [x for x in hi]
+        result = solve(n, cpy, c, e, m, height)
+        answer = min(result, answer)
+
+    return answer
+
+def solve(n, hi, c, e, m, height):
+    result = 0
+
+    for x in hi:
+        if x = height:
+            do nothing
+        elif x < height:
+            result += min(c*(height-x), m*(number_of_needed_noves)+c*(height-new_x))
+        else:
+            result += e*(x-height)
+```
+
+El algoritmo está implementado en [greedy1.py]().
+
+**Complejidad temporal:**
 
 ### **2.2) Solución greedy #2:**
 
@@ -46,7 +93,7 @@ Ahora, en el caso en que lleguemos a una columna con altura $hi_i > k$, dado que
 
 ### **2.4) Solución óptima para cuando $k >> n$:**
 
-### **2.5) Solución óptima generalizada**
+### **2.5) Solución óptima generalizada:**
  
 ## **3) Organización del proyecto:**
 
