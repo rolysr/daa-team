@@ -26,7 +26,7 @@ def plot_problem(n, hi, c, e, m):
     # naming the y axis
     plt.ylabel('Result - axis')
 
-    plt.title('Problem graph')
+    plt.title('Problem graph. c:{}, e:{}, m:{}'.format(c, e, m))
 
     # function to show the plot
     plt.show()
