@@ -154,7 +154,7 @@ Una idea interesante para ganar intuición sobre el comportamiento de las altura
 
 A partir de estos experimentos, resulta interesante analizar que estas funciones cumplen que poseen un solo mínimo y en caso de tener más de uno, todos son provenientes de valores consecutivos en el eje de las alturas. Nótese que esta definición es idéntica a la de función unimodal, donde el único extremo en este caso es un mínimo. Por lo tanto debemos demostrar que:
 
-#### **Proposición 2.3.1)**Sea la función $f(h) = r$, donde $h$ es una altura de un rango válido en una instancia del problema Jenga y $r$ es el costo mínimo de igualar todas las alturas de las columnas $hi$ a $h$, esta es unimodal:
+#### **Proposición 2.3.1)** Sea la función $f(h) = r$, donde $h$ es una altura de un rango válido en una instancia del problema Jenga y $r$ es el costo mínimo de igualar todas las alturas de las columnas $hi$ a $h$, esta es unimodal:
 
 **Demostración:** (Usar definición de función unimodal y aplicarla a instancias del problema y analizando casos de acuerdo a las relaciones entre $c$, $e$ y $m$)
 
