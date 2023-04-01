@@ -18,7 +18,7 @@ La solución anteriormente explicada no aprovecha una serie de cuestiones intuit
 
 Por otro lado, vemos que al analizar las operaciones posibles para llevar la columna $hi_i$ a una altura prefijada $k$, si esta está debajo de dicha altura solo tiene sentido subirla, ya que bajarla la aleja más del formato de la solución deseada y le añade al costo global del algoritmo un valor no negativo, lo cual es posible que empeore la solución general. Esto ocurre análogamente para las columnas cuya altura inicial $hi_i$ está por encima del umbral que define una altura a la cual se quieren llevar todas las alturas iniciales de las columnas. También intuitivamente vemos que no tiene sentido variar la altura de una columna cuyo tamaño coincide con la altura objetivo, ya que se estaría añadiendo un costo no negativo que igualmente puede empeorar la solución general. Por lo tanto queremos demostrar la siguiente proposición:
 
-#### **Proposición 2.1.1)** Sea $k$ una altura a la cual se desea llevar cada una de las columnas dadas inicialmente, se cumple que para cada altura $hi_i$, solo tiene sentido que esta aumente en caso de que $hi_i < k$, que disminuya si $hi_i > k$ y se mantenga igual si ocurre que $hi_i = k$.
+#### **Proposición 2.1.1)** Sea $k$ una altura a la cual se desea llevar cada una de las columnas dadas inicialmente, se cumple que para cada altura $hi_i$, solo tiene sentido que esta aumente en caso de que $hi_i < k$, que disminuya si $hi_i > k$ y se mantenga igual si ocurre que $hi_i = k$. Además, no se tiene sentido que $k < min(hi)$ ni $k > max(hi)$.
 
 Demostración: (Rellenar demostrando con un absurdo separando por casos posibles.)
 
@@ -81,11 +81,15 @@ def solve(n, hi, c, e, m, height):
             result += min(c*(height-x), m*(number_of_needed_noves)+c*(height-new_x))
         else:
             result += e*(x-height)
+
+    return result
 ```
 
 El algoritmo está implementado en [greedy1.py]().
 
 **Complejidad temporal:**
+La complejidad temporal de hallar el máximo y mínimo de $hi$ se puede lograr en $\Omicron{n}$, luego el proceso de ordenamiento de $hi$ se puede lograr en $\Omicron(n\log{n})$ a partir de un ordenamiento con el algoritmo de *Merge Sort*. Por otro lado, el método *solve(...)* se ejecuta en $O(n^2)$ ya que por cada elemento del array $hi$ en la posición $i$, se hacen a lo sumo $n-i$ operaciones buscando los elementos a la derecha con los cuales verificar si es posible realizar las acciones de movimiento, por lo tanto, $solve(...)$ tiene complejidad temporal $O(n^2)$ en el peor caso. Finalmente, dado que por cada altura posible se ejecuta el método $solve(...)$, se cumple que el $for$ que realiza este proceso tiene un costo en el peor caso de $\Omicron{(k)}*\Omicron{(n^2)} = \Omicron{(kn^2)}$. Finalmente, el costo total sería $\Omicron(n + n + n\log{n} + k*n^2) = O(kn^2)$.
+
 
 ### **2.2) Solución greedy #2:**
 
@@ -95,7 +99,10 @@ El algoritmo está implementado en [greedy1.py]().
 
 ### **2.5) Solución óptima generalizada:**
  
-## **3) Organización del proyecto:**
+## **3) Implementación del proyecto del proyecto:**
 
-## **4) Evaluadores y útiles implementados:**
+### **3.1) Soluciones:**
 
+### **3.1) Informe:**
+
+### **3.1) Pruebas:**
