@@ -21,7 +21,56 @@ Por otro lado, vemos que al analizar las operaciones posibles para llevar la col
 
 #### **Proposición 2.1.1)** Sea $k$ una altura a la cual se desea llevar cada una de las columnas dadas inicialmente, se cumple que para cada altura $hi_i$, solo tiene sentido que esta aumente en caso de que $hi_i < k$, que disminuya si $hi_i > k$ y se mantenga igual si ocurre que $hi_i = k$. Además, no se tiene sentido que $k < min(hi)$ ni $k > max(hi)$.
 
-Demostración: (Rellenar demostrando con un absurdo separando por casos posibles.)
+Demostración:
+
+#### **¿Todo lo que sube, nunca baja?**
+
+Demostremos ahora que si se desea llevar una columna $n$ a una altura $k$ entonces:
+
+1.	Si altura de $z$<$k$ entonces a $z$ siempre se le aumentará su altura hasta alcanzar $k$ y por tanto nunca se le realizará operaciones que disminuyan su altura.
+2.	Si altura de $z$=$k$ entonces no se requiere cambio alguno. Cualquier operación sobre dicha columna será un costo innecesario ya que esta tiene la altura deseada.
+3.	Si altura de $z$>$k$ entonces a $z$ siempre se le disminuirá su altura hasta alcanzar $k$ y por tanto nunca se le realizará operaciones que aumenten su altura.
+
+Podemos notar que los puntos 1 y 3 son situaciones análogas y como se podrá apreciar a continuación la demostración aborda ambos a la vez.
+Para dicha demostración asumamos que tanto el punto 1 como el 3 no se cumplen en algún momento y por tanto se generan todas las posibles situaciones que lleven a una contradicción en alguno de ellos:
+
+1.	Se colocó un palito en la columna $z$ y luego se eliminó un palito en la misma.
+2.	Se colocó un palito en la columna $z$ y luego se movió a otra columna $n$.
+3.	Se eliminó un palito de la columna $z$ y luego se colocó uno en la misma.
+4.	Se eliminó un palito de la columna $z$ y luego se movió de una columna $n$ a $z$ un palito.
+5.	Se movió un palito de $n$ a $z$ y luego se eliminó uno de $z$.
+6.	Se movió un palito de $z$ a $n$ y luego se colocó de vuelta un palito en $z$.
+7.	Se movió un palito de $z$ a $n$ y luego se movió otro de $x$ a $z$, donde $x$ puede ser $n$.
+8.	Se movió un palito de $n$ a $z$ y luego se movió otro de $z$ a $x$, donde $x$ puede ser $n$.
+
+Ahora demostremos que todas son operaciones no factibles debido a los costos de cada operación. Para ello a continuación se demostrará la infactibilidad de cada uno de los puntos:
+1.	Al colocar un palito en la columna $z$ y luego eliminarlo entonces esta volvió a su estado anterior (subió y bajó). Para ello realizamos operaciones con costo $c+e \ge 0$ y sin embargo el estado de las columnas permanece intacto, por tanto, infactible. 
+2.	Al colocar un palito en la columna $z$ y luego moverlo a $n$ entonces $z$ cambio su estado y luego volvió al anterior (subió y bajó) y $n$ aumentó su altura en 1. Para ello se realizaron operaciones con costo $c+m$ y sin embargo colocando un palito en $n$ era suficiente para alcanzar el estado antes descrito. Lo anterior tiene costo $c \leq c+m$ el cual era el costo de la operación 2, por tanto, infactible.
+3.	Al eliminar un palito de $z$ y luego colocar en dicha columna 1 palito esta cambió su estado y luego volvió al anterior (bajó y subió). Para ello realizamos operaciones con costo $c+e \ge 0$ y sin embargo el estado de las columnas permaneció intacto, por tanto, infactible.
+4.	Al eliminar un palito de $z$ y luego mover de $n$ a $z$ otro, la columna cambió su estado y luego volvió al anterior (bajó y subió). Para ello se realizaron operaciones con costo $m+e$ y sin embargo solo era necesario eliminar un palito de $n$ para alcanzar el estado antes descrito. Lo anterior tiene costo $e \leq m+e$ que es el costo de la operación 4, por tanto, infactible.
+5.	Al mover un palito de $n$ a $z$ y luego eliminar uno de la columna $z$, esta cambió su estado y luego regresó al anterior ( subió y bajó). Para ello se realizaron operaciones con costo $m+e$ y solo era necesario eliminar un palito de la columna $n$ para llegar al estado antes descrito. Lo anterior tiene costo $e \leq m+e$ que es el costo de la operación 5, por tanto, infactible.
+6.	Al mover un palito de $z$ a $n$ y luego colocar en $z$ uno nuevo, se alteró la columna y luego regresó a su rayado anterior (bajó y subió). Para ello se realizaron operaciones con costo $m+c$ y solo era necesario colocar un palito en $n$ para alcanzar el estado antes descrito. Lo anterior tiene costo $c \leq m+c$ que es el costo de la operación 6, por tanto, infactible.
+7.	Al mover un palito de $z$ a $n$ y luego mover desde una columna $x$ a $z$ otro palito, se alteró el estado de $z$ y luego regresó al anterior (bajó y subió). Para ello se realizaron operaciones con costo $2m$ y sin embargo era suficiente mover un palito de $x$ a $n$ para alcanzar el estado antes descrito. Notar que si $x$ es $n$ entonces no es requerida ninguna operación. Mover de $x$ a $n$ tiene costo $m \leq 2m$ que es el costo de la operación 7, por tanto, infactible.
+8.	Al mover un palito de $n$ a $z$ y luego mover a una columna $x$ un palito de $z$, se alteró el estado de $z$ psra luego regresar al anterior (subió y bajó). Para ello se realizaron operaciones con costo $2m$ y sin embargo era suficiente mover un palito de $n$ a $x$ para alcanzar el estado antes descrito. Notar que si $x$ es $n$ entonces no es requerida ninguna operación. Mover de $n$ a $x$ tiene costo $m \leq 2m$ que es el costo de la operación 8, por tanto, infactible.
+
+Como encontramos una contradicción en cada uno de los casos posibles entonces la hipótesis que indicaba que los puntos 1 y 3 no se cumplían, es falsa y por tanto podemos afirmar que si se cumplen.
+
+#### **Respeta los límites**.
+
+Demostremos que si la altura $k$ es la óptima según sus costos de operaciones necesarias para llevar todas las columnas del array a dicha altura entonces $Min$(alturas del array)$ \leq k \leq Máx$(alturas del array).
+Para ello hay que demostrar:
+1.	Nunca se cumplirá que $k<Min$(alturas del array).
+2.	Nunca se cumplirá que $k>Máx$(alturas del array).
+
+Demostremos 1:
+
+Asumamos, sin pérdida de la generalidad, que se cumple que $k<Min$(alturas del array) para algún caso. Si $x=Min$(alturas del array), $g$ es el costo óptimo de las operaciones necesarias para llevar el array a altura $x$ y $n$ es el array resultantes con todas las columnas igual a $x$. 
+
+Entonces obligatoriamente debemos eliminar palitos de cada columna de $n$ hasta llevar cada una a altura $k$, demostremos esta afirmación. Podemos descartar colocar palitos ya que sabemos que las columnas deben disminuir hasta $k$ y por la proposición anterior sabemos que no tiene sentido aumentar si luego va a disminuir. Ahora para descartar el mover palitos podemos utilizar lo mismo puesto que al mover de $z$ a $p$ estaríamos disminuyendo la altura de $z$ pero a la par aumentamos la de $p$ que ya conocemos debemos disminuirla luego. Por tanto, solo queda la única operación lógica para la situación, eliminar palitos.
+
+Como es necesario eliminar $(x-k)*$(dimensión del array)$>0$ palitos con costo $r=e*(x-k)$(dimensión del array)$>0$ entonces finalmente para llevar todas las columnas del array a altura $k$ costará $g+r$. Pero sabemos que $r>0$ por tanto $g+r>g$, entonces llevar el array a altura $x$ es un óptimo comparado con llevarlo a altura $k$. Encontramos una contradicción por tanto podemos concluir que la hipótesis no se cumple entonces $k>Min$(alturas del array).
+
+El punto 2 es análogo con la diferencia que solo se realizarían operaciones de colocar.
 
 Ahora, una vez que sabemos que para una altura específica $k$ a la cual se quiere igualar todas las columnas, solo es necesario subir las columnas con alturas debajo de dicho umbral, bajar las que queden por encima y mantener invariante aquellas cuya altura sea igual al umbral, entonces nos surge una idea que nos ayuda a evitar el Backtracking: En vez de probar con las posibles combinaciones entre todas las acciones admitidas para una columna en un momento dado, podemos para cada columna solo dedicidr cuánto bajar o subir en correspondencia a su relación con la altura pivote ($k$).
 
@@ -29,15 +78,28 @@ Analicemos ahora las situaciones posibles que se presentan cuando tiene sentido 
 
 #### **Proposición 2.1.2)** Sea una columna con altura $hi_i < k$, donde $k$ es una altura pivote a la cual se quiere igualar. Dado que solo tiene sentido que $hi_i$ aumente, entonces si se decide aumentar con un movimiento de un palito de otra altura $hi_j$ con $i \neq j$ se debe cumplir que $hi_j > k$.
 
-**Demostración:** (Haciendo un absurdo con los casitos en que $hi_j \leq k$)
+**Demostración:**
+
+Si elegimos $hi_j < k$, entonces al mover un palito de dicha columna a $hi_i$ estaríamos disminuyendo la altura de $hi_j$. Pero sabemos que las columnas con altura menor que el pivote $k$ solo pueden aumentar para alcanzar dicha altura, luego, no es válido mover un palito de $hi_j<k$ hacia $hi_i$ ya que estaríamos contradiciendo la proposición 2.1.1.
 
 Luego, sería interesante analizar cual es la mejor manera de distribuir acciones de colocar con costo $c$ y mover con costo $m$ con el objetivo de que $hi_i + c*no_c + m*no_m = k$. Ahora, cuando se analiza detenidamente el problema, no es difícil fijarse que la solución está en el mínimo entre el costo de igualar $hi_i$ con $k$ usando solo operaciones de inserción o usando operaciones de movimiento mientras sea posible más operaciones de inserción en caso de que se agoten los movimiento. Esto se intuye a partir de analizar qué sucede cuando el costo de mover es menor que el costo de quitar de una columna y colocar luego en otra, es decir, si $m < c + e$. Es interesante plantearnos esto ya que el proceso de mover es equivalente a quitar y colocar, pero la diferencia radica en cuál de estos procesos es óptimo respecto al costo de operaciones. Entonces necesitamos probar que:
 
 #### **Proposición 2.1.3)** Sea una columna con altura $hi_i < k$, donde $k$ es una altura pivote a la cual se quiere igualar. Dado que solo tiene sentido que $hi_i$ aumente, los aumentos solo puenden ser de dos formas, y la que se escoja, es lo mejor que se puede hacer para llevar la altura $hi_i$ al valor de $k$:
- 1. Si $m < c + e$, entonces realiza tantas acciones de movimiento como columnas existan con tamaño superior a $k$, y si no alcanza para igualar a $k$, entonces lo restante solo se puede rellenar utilizando operaciones de inserción.
- 2. En caso contrario se hacen sólo operaciones de inserción para hacer que $hi_i = k$.
+ 
+**Demostración:**
 
-**Demostración:** (Demostrar con un análisis de casos y absurdos.)
+#### **¡Seamos greedys!**
+Caso $m<c+e$ donde hay columnas con altura menor que $k$ y otras con altura mayor que $k$:
+
+En este caso siempre será óptimo realizar movimientos de palitos de una columna $x$ con altura mayor que $k$ a otra $z$ con altura menor que $k$, en lugar de colocar en $z$ y luego en un futuro eliminar de $x$. Para demostrarlo, es sencillo notar que si se desea incrementar el tamaño de $z$ y tenemos columna/s $x$ con altura mayor que $k$, entonces se podrá decrementar la/s columna/s $x$ en la misma operación. Esto se debe precisamente a que el costo de mover será mejor que colocar y luego eliminar. En caso de que no exista columna $x$ con altura mayor que $k$, solo resta hacer inserciones.
+
+Caso m>c+e:
+
+Al contrario que en el caso anterior, ahora se puede apreciar que es mejor eliminar un palito de $x$ y luego colocar en $z$, en lugar de mover de una columna a otra. Esto se debe precisamente a los costos de cada operación, donde la suma del costo de eliminar un palito junto a colocar otro, tendrá menor valor que mover de una columna a otra. Por tanto nunca resultará óptimo mover porque el resultado de dicha operación puede ser logrado combinanando las otras dos en un menor costo.
+
+Caso m=c+e:
+
+Ahora tendremos la posibilidad de escoger cualquiera de los dos procedimientos antes descritos (mover de una columna a otra o colocar un palito en "z" y eliminar en "x") puesto que ambas costarán lo mismo. En nuestros algoritmos decidimos mover en algunos y en otros eliminar y colocar. 
 
 Ahora, en el caso en que lleguemos a una columna con altura $hi_i > k$, dado que solo tiene sentido que esta disminuya su tamaño, las posibles operaciones a realizar son quitar un palito y disminuir su altura (con costo $e$), o mover el palito más arriba de esta hacia la parte superior de otra columna (con costo $m$). Sucede que lo mejor que se puede hacer sobre una columna con estas características es algo análogo a la proposición $2.1.3)$ pero sucede que esto no nos dice mucho, ya que no nos permite converger a una metodología para saber qué hacer cuando llegamos a una columna de este estilo, dado el procedimiento mencionado con dicha proposición para ajustar la altura de aquellas columnas por debajo del umbral $k$.
 
@@ -47,7 +109,15 @@ Una propuesta para simplificar la forma de operar sobre las columnas es si las o
 
 #### **Proposición 2.1.4)** Si se aplicara el algoritmo de iterar por cada columna nivelándola a una altura pivote $k$ aplicando el procedimiento de la proposición $2.1.3)$ y haciendo este de forma análoga para cuando $hi_i > k$. Entonces, el resultado es equivalente a cuando lo hacemos sobre el array ordenado y cuando una columna cumple que su altura es $hi_i > k$, solo es necesario realizar operaciones de quitar palitos.
 
-**Demostración:** (Rellenar).
+**Demostración:**
+
+Sabemos que todas las columnas con alturas menores que $k$ deberán aumentar en cada operación que se haga sobre ellas y las de altura mayor que $k$ solo deberán disminuir, esto por proposición 2.1.2. Disponemos ya de una estrategia para escoger la forma óptima de aumentar y de disminuir columnas, proposición 2.1.3. Luego, teniendo las columnas ordenadas de menor a mayor, iterando por cada una de ellas y conociendo que operación o combinación de operaciones son las óptimas, se podrá establecer el procedimiento de 2.1.4 de la siguiente manera:
+
+Para las columnas $x$ de altura menor que $k$ determinamos la cantidad de palitos necesarios para alcanzar $k$ y luego procedemos a calcular el costo óptimo de llevar a cabo dicha acción. 
+1. Conocemos que si el óptimo es colocar y eliminar ya que $m>c+e$; entonces no hay mucho que analizar, calculamos $(k-x)*c$ y esto será lo mejor para dica columna. 
+2. Pero si lo mejor es mover palitos por la relación de costos entonces debemos determinar el número de palitos disponibles en las columnas $z$ con alturas mayores que $k$, que pueden ser movidos hacia $x$. 
+
+Entonces utilizando lo antes descrito podemos notar que si nos encontramos en 1, es una situación bastante sencilla, las alturas menores que $k$ serán aumentadas con operaciones de inserción y cuando se llega a las de altura mayor que $k$ solo podremos eliminar palitos. Sin embargo, si estamos en 2 entonces se irán moviendo palitos de las columnas $z$ hacia $x$; con lo cual pueden darse dos nuevas situaciones. La primera es que las columnas $x$ alcancen $k$ solo moviendo palitos desde $z$ y por tanto, solo resta eliminar los palitos en $z$ que hacen que existan columnas con altura mayor que $k$; si no existen dichos palitos significa que no quedan columnas con alturas distintas de $k$ y por tanto el array se encuentra nivelado. La segunda situación, es que por el proceder de ir moviendo de $z$ a $x$ se agoten las columnas de altura mayor que $k$ ($z$) y por tanto es obligatorio colocar palitos en las columnas que aún poseen alturas menor que $k$. Entonces podemos notar que en la iteración cuando llegamos a las columnas,que en el estado inicial poseían altura mayor que $k$, en ciertas ocasiones no requerirá realizar ninguna operación porque ya alcanzaron la altura $k$ mientras se movían palitos hacia $x$, o solo restará eliminar todos los sobrantes producto de que es la operación óptima o que las columnas que tenían altura menor que $k$ ya alcanzaron dicho estado.
 
 Finalmente, gracias a las proposiciones anteriores, el siguiente algoritmo ofrece la respuesta al problema planteado:
 
@@ -89,7 +159,7 @@ solve(n, hi, c, e, m, height):
 El algoritmo está implementado en [greedy1.py]().
 
 **Complejidad temporal:**
-La complejidad temporal de hallar el máximo y mínimo de $hi$ se puede lograr en $\Omicron{n}$, luego el proceso de ordenamiento de $hi$ se puede lograr en $\Omicron(n\log{n})$ a partir de un ordenamiento con el algoritmo de *Merge Sort*. Por otro lado, el método *solve(...)* se ejecuta en $O(n^2)$ ya que por cada elemento del array $hi$ en la posición $i$, se hacen a lo sumo $n-i$ operaciones buscando los elementos a la derecha con los cuales verificar si es posible realizar las acciones de movimiento, por lo tanto, $solve(...)$ tiene complejidad temporal $O(n^2)$ en el peor caso. Finalmente, dado que por cada altura posible se ejecuta el método $solve(...)$ y se ejecuta la creación de un array copia de $hi$ en $\Omicron(n)$ (esto es necesario ya que durante el método $solve(...)$ se varía $hi$ para simular las variaciones en las columnas y de esta forma se evita que persistan los cambios una vez se salga del método), se cumple que el $for$ que realiza este proceso tiene un costo en el peor caso de $\Omicron{(m)}*\Omicron{(n + n^2)} = \Omicron{(mn^2)}$ (donde $m = max_{hi} - min_{hi}$). Finalmente, el costo total sería $\Omicron(n + n + n\log{n} + m*n^2) = O(mn^2)$.
+La complejidad temporal de hallar el máximo y mínimo de $hi$ se puede lograr en $\Omicron{n}$, luego el proceso de ordenamiento de $hi$ se puede lograr en $\Omicron(n\log{n})$ a partir de un ordenamiento con el algoritmo de *Merge Sort*. Por otro lado, el método *solve(...)* se ejecuta en $O(n^2)$ ya que por cada elemento del array $hi$ en la posición $i$, se hacen a lo sumo $n-i$ operaciones buscando los elementos a la derecha con los cuales verificar si es posible realizar las acciones de movimiento, por lo tanto, $solve(...)$ tiene complejidad temporal $O(n^2)$ en el peor caso. Finalmente, dado que por cada altura posible se ejecuta el método $solve(...)$ y se ejecuta la creación de un array copia de $hi$ en $\Omicron(n)$ (esto es necesario ya que durante el método $solve(...)$ se varía $hi$ para simular las variaciones en las columnas y de esta forma se evita que persistan los cambios una vez se salga del método), se cumple que el $for$ que realiza este proceso tiene un costo en el peor caso de $\Omicron{(m)}*\Omicron{(n + n^2)} = \Omicron{(mn^2)}$, donde $m=max_{hi}-min{hi}$. Finalmente, el costo total sería $\Omicron(n + n + n\log{n} + m*n^2) = O(mn^2)$.
 
 ### **2.2) Solución greedy #2:**
 Al analizar el proceso del método $solve(...)$ propuesto, vemos que no es necesario tener que simular todo el proceso *voraz* de realizar las variaciones de alturas ya que si nos fijamos, solo nos interesan las cantidades totales de palitos por debajo y por encima del umbral de una altura pivote $k$, que se quiere "rellenar" o "quitar". Esta idea intuitiva nos permite deducir que, para determinar el costo mínimo de variar las columnas con altura distinta de $k$, debemos pensar en una idea en la que solo necesitemos las unidades de palitos que deben ponerse encima de aquellas columnas debajo del umbral y aquellas que debemos sustraer de forma análoga para las columas encima de este. Como ya demostramos, no tiene sentido variar las columnas con altura igual a la que queremos llegar.
@@ -99,10 +169,15 @@ Una vez que tenemos los valores $count_{ups}$ y $count_{downs}$ referentes a las
 #### **Proposición 2.2.1)** Sean los valores $count_{ups}$ y $count_{downs}$ calculados:
 1. Si $count_{ups} = count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{ups}*m$.
 2. Si $count_{ups} < count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{ups}*m + (count_{downs} - count_{ups})*e$.
-3. Si $count_{ups} > count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{downs}*m + (count_{ups} - count_{downs})*e$.
+3. Si $count_{ups} > count_{downs}$ y $m < c + e$, entonces el costo mínimo de igualar las alturas es $count_{downs}*m + (count_{ups} - count_{downs})*c$.
 4. En otro caso, el costo mínimo de operaciones es $count_{ups}*c + count_{downs}*e$.
 
-**Demostración:** (Un absurdo para cada uno de los casos)
+**Demostración:** 
+
+Para demostrar 1, podemos apreciar que el número de palitos requeridos a ubicar en las columnas con alturas menores que $k$ son igual al número que se deben eliminar de las columnas con alturas mayores que $k$. Sabemos que $m<c+e$ luego por proposición 2.1.2 tenemos que lo óptimo será mover palitos siempre que sea posible. Por tanto, debemos mover y al tener un igual número de palitos en ambos lados del umbral $k$ el costo de nivelar las columnas a $k$ será $m*count_{ups}$ o $m*counts_{downs}$.
+Para demostrar 2, podemos utilizar la demostración de la proposición 2.1.4. En ella concluimos que si $m<c+e$ entonces se deberán mover todos los palitos posibles desde las columnas con altura mayor que $k$ hacia aquellas con altura menor que $k$. Por tanto, si $count_{ups}<count_{downs}$ se moverán todos los palitos posibles hasta que las columnas por debajo del umbral $k$ lo alcancen, esto se hará con costo $m*count_{ups}$. Pero, sabemos que aún restaron $count_{downs}-count_{ups}$ palitos en las columnas por encima del umbral, estos deberán ser eliminados, resultado que se puede apreciar en la demostración de 2.1.4. Finalmente, eliminar dichos palitos costará $e*(count_{downs}-count_{ups})$, resultando en un costo total $count_{ups}*m + (count_{downs} - count_{ups})*e$.
+Para demostrar 3, podemos apreciar que es una situación análoga a 2. Con la diferencia que en lugar de eliminar los palitos restantes en las columnas con alturas por encima del umbral $k$ ahora los $count_{downs}$ no son suficientes para llevar las columnas con alturas por debajo del umbral $k$ hasta este. Por tanto, es requerido colocar palitos en dichas columnas. Mover todos los palitos posibles costará $count_{downs}*m$ y luego colocar los faltantes en las columnas por debajo del umbral $(count_{ups} - count_{downs})*c$, resultando en $count_{downs}*m + (count_{ups} - count_{downs})*c$.
+Para demostrar 4, podemos utilizar la proposición 2.1.3, específicamente el caso 2 y el 3. Estos nos dicen que si $c+e \leq m$ entonces mover no es una operación óptima o resulta igual colocar y eliminar. Por tanto, se podrá colocar palitos en todas las columnas con altura menor que el umbral $k$ y eliminar en todas aquellas con alturas mayores. Esto costará $count_{ups}*c + count_{downs}*e$.
 
 **Idea general de solución:** 
 Dada la proposición $2.2.1)$, es posible realizar el método $solve(...)$ con un sólo recorrido sobre el arreglo de alturas, además, podemos eliminar el factor de ordenación ya que el cálculo del nuevo método $solve(...)$ es posible con el array $hi$ original. La idea sería hallar los valores $count_{ups}$ y $count_{downs}$ y luego verificar el cumplimiento de las condiciones mencionadas en $2.2.1)$ y devolver como resultado lo correspondiente a aquella que se cumpla.
@@ -141,7 +216,7 @@ solve(n, hi, c, e, m, height):
 El algoritmo está implementado en [greedy2.py]().
 
 **Complejidad temporal:**
-En este caso, se elimina el factor de ordenamiento en $O(n\log{n})$ de la solución anterior y se varía el método $solve(...)$ a una implementación en $O(n)$ ya que en este solo se itera una vez por $hi$ verificando las columnas con altura menor o mayor que $k$ prefijada y aumentando o disminuyendo las variables $count_{ups}$ y $count_{downs}$ mientras sea necesario. Finalmente, el algoritmo mejora su complejidad a $O(n*m)$. 
+En este caso, se elimina el factor de ordenamiento en $O(n\log{n})$ de la solución anterior y se varía el método $solve(...)$ a una implementación en $O(n)$ ya que en este solo se itera una vez por $hi$ verificando las columnas con altura menor o mayor que $k$ y aumentando o disminuyendo las variables $count_{ups}$ y $count_{downs}$ mientras sea necesario. Finalmente, el algoritmo mejora su complejidad a $O(n*m)$. 
 
 ### **2.3) Solución greedy #2 + Búsqueda ternaria:**
 Una de las grandes interrogantes del problema es si es posible encontrar de forma más eficiente la altura óptima a la cual igualar todas las columnas con el mínimo costo de operaciones posibles. Algunas ideas iniciales erróneas nos hacían pensar que era posible que la altura óptima siempre coincidiría con la altura de alguna columna, algo que logró comprobar como incorrecto a partir de un *script* que generaba casos de prueba y verificaba con los algoritmos anteriores si la altura resultante coincidía con la altura inicial de alguna de las columnas y se notaba que no siempre era cierto.
@@ -159,7 +234,7 @@ A partir de estos experimentos, resulta interesante analizar que estas funciones
 
 **Demostración:** (Usar definición de función unimodal y aplicarla a instancias del problema y analizando casos de acuerdo a las relaciones entre $c$, $e$ y $m$)
 
-Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa la el mínimo de la función unimodal $f(h)=r$. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
+Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
 
 #### **Proposición 2.3.2)** la *Búsqueda Ternaria* encuentra correctamente el valor de una función unimodal.
 
@@ -209,7 +284,7 @@ El algoritmo está implementado en [greedy2_ts.py]().
 
 **Complejidad temporal:**
 La variación principal de este algoritmo radica en que la complejidad temporal de la búsqueda de la altura 
-óptima y su costo mínimo correspondiente se basa en una *Búsqueda Ternaria* con la modificación de que el factor no recursivo de su función $T(n)$ de complejidad temporal ahora es lineal y no constante como en su versión clásica, ya que dicho factor es el producto de ejecutar el método $solve(...)$ en $\Omicron(n)$. Finalmente, se tiene que $T(n) = T(\frac{2n}{3}) + n$ ya que se en cada instancia no base de la *Búsqueda Ternaria*, se realiza un llamado recursivo sobre una sección con tamaño igual a $\frac{2}{3}$ del tamaño del problema en el llamado actual. Por lo tanto, si aplicamos el **Teorema Maestro** vemos que $T(n) \in \Omicron(n\log{m})$, por lo que esta misma sería la complejidad total del algoritmo. 
+óptima y su costo mínimo correspondiente se basa en una búsqueda ternaria con la modificación de que el factor no recursivo de su función $T(n)$ de complejidad temporal ahora es lineal y no constante como en su versión clásica, ya que dicho factor es el producto de ejecutar el método $solve(...)$ en $\Omicron(n)$. Finalmente, se tiene que $T(n) = T(\frac{2n}{3}) + n$ ya que se en cada instancia no base de la *Búsqueda Ternaria*, se realiza un llamado recursivo sobre una sección con tamaño igual a $\frac{2}{3}$ del tamaño del problema en el llamado actual. Por lo tanto, si aplicamos el **Teorema Maestro** vemos que $T(n) \in \Omicron(n\log{m})$, por lo que esta misma sería la complejidad total del algoritmo.  
 
 ### **2.4) Solución óptima para cuando $m >> n$:**
 En las soluciones anteriores no hemos tenido en cuenta qué relación puede haber entre el tamaño del espacio de búsqueda de la altura óptima y el tamaño del array $hi$. Es decir, nuestras ideas son independientes a si $m$ es mayor o menor que $n$. Por lo tanto, nuestro objetivo consiste en separar el problema en los casos en que $n \geq m$ y $n < m$. Intuitivamente, para lograr una mejora con respecto al segundo caso ($n < m$) necesitaríamos hacer que la complejidad temporal total sea menor que $\Omicron{(n\log{m})}$, lo cual solo se lograría si pudieramos expresar dicha complejidad en función de términos o factores menores que $\Omicron{(n\log{m})}$, es decir, lograr que la nueva complejidad tenga la forma $\sum{t_i}$ donde $t_i < n\log{m}$.
@@ -316,6 +391,9 @@ gbt_or_g2t(n, hi, c, e, m):
 ```
 
 El algoritmo está implementado en [gbt_or_g2t.py]().
+
+**Complejidad temporal:**
+Ahora, debido a la propuesta anterior, debemos notar que el algoritmo es en general $\Omicron{(min(n\log{m}, n\log{n} + \log{n}\log{m}))}$ dado que tiene complejidad $\Omicron(n\log{m})$ o $\Omicron(n\log{n} + \log{n}\log{m})$ en caso de que $n n \geq m$ o $m > n$ respectivamente.
 
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
