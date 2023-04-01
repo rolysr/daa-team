@@ -232,13 +232,40 @@ A partir de estos experimentos, resulta interesante analizar que estas funciones
 
 #### **Proposición 2.3.1)** Sea la función $f(h) = r$, donde $h$ es una altura de un rango válido en una instancia del problema Jenga y $r$ es el costo mínimo de igualar todas las alturas de las columnas $hi$ a $h$, esta es unimodal:
 
-**Demostración:** (Usar definición de función unimodal y aplicarla a instancias del problema y analizando casos de acuerdo a las relaciones entre $c$, $e$ y $m$)
+**Demostración:** De forma general, una función unimodal de dos dimensiones puede verse como una función con un punto $x$ tal que $f(x)$ es el mínimo (o máximo) de la función y se cumple que $\forall{x'}, x' < x, f(x') \geq f(x)$, y la función es monótona decreciente a la izquierda y $\forall{x'}, x' > x, f(x') \geq f(x)$, y la función es monótona creciente para los valores a la derecha de $x$. Análogamente, esto se cumple para las funciones unimodales con máximo, pero alternado los tipos de monotonía respecto al caso cuando es unimodal de mínimo.
 
-Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
+Para el caso específico de este problema, es necesario demostrar que $f(h) = r$ es una función unimodal de mínimo, es decir, existe una altura para la cual se alcanza el valor óptimo de solución del problema y todas las alturas menores o mayores cumplen que tienen evaluaciones mayores o iguales al valor de la función en dicho punto y a la izquierda de esta, $f$ es decreciente y a su derecha $creciente$.
+
+Por definición del problema, siempre va a existir al menos un punto donde la función alcance su valor óptimo mínimo, esto a que trivialmente pudiéramos iterar por los posibles valores de las alturas dadas y quedarnos con aquel que de como resultado el menor costo de las operaciones para igualar todas las columnas de $hi$ a esta. Ahora, suponiendo la existencia de un mínimo, es evidente que toda altura válida menor o mayor que esta producirá valores mayores iguales al valor óptimo hallado, ya que en caso contrario, la altura denotada como óptima no lo es, ya que existe otra que tiene una evaluación menor. Luego, lo que resulta interesante para demostrar es que la función a la izquierda de $h$ es monótona decreciente y es monótona creciente a la derecha. Para esto vamos a realizar la demostración para el trozo de la función a la izquierda de $h$, comprobando que para todo par de valores consecutivos $h'$ y $h'-1$, se cumple $f(h'-1) \geq f(h')$, sabiendo que ambas evaluaciones son mayores o iguales a $f(h)$.
+
+Ahora, una vez demostrado esto, debemos encontrar un algoritmo que nos permita hallar de manera eficiente y precisa el valor de la altura óptima. En la literatura dicho algoritmo se denomina *Búsqueda Ternaria*. Su principio de funcionamiento es similar a la *Búsqueda Binaria*, solo que, en vez de analizar dos secciones de un espacio de búsqueda, se analizan tres, y en base a un criterio análogo permite converger correctamente al valor buscado analizando solamente uno de las tres secciones dadas. Por lo tanto, debemos demostrar que:
 
 #### **Proposición 2.3.2)** la *Búsqueda Ternaria* encuentra correctamente el valor de una función unimodal.
 
-**Demostración:** (Demostrar el algoritmo completo)
+**Demostración:**  Esta búsqueda tiene la misma idea principal que la búsqueda binaria, que es la idea de ir examinando valores de la función y “descartando” posiciones candidatas en base a la información obtenida.
+
+Sea $f(x)$ una función unimodal en el intervalo $[l; r]$. Tomamos dos puntos $m1$ y $m2$ en este segmento: $l < m1 < m2 < r$. Entonces, hay tres posibilidades:
+
+- Si $f(m1) < f(m2)$, entonces el máximo requerido no puede ubicarse en el lado izquierdo - $[l; m1]$. Esto significa que el máximo debe buscarse en el intervalo $[m1;r]$.
+- Si $f(m1) > f(m2)$, de manera similar al anterior caso. Ahora, el máximo requerido no puede estar en el lado derecho - $[m2; r]$, así que debe buscarse en el segmento $[l; m2]$.
+- Si $f(m1) = f(m2)$, entonces la búsqueda debe realizarse e $[m1; m2]$, pero este caso se puede atribuir a cualquiera de los dos anteriores (para simplificar el código). Tarde o temprano, la longitud del segmento será un poco menor que una constante predeterminada, y el proceso podrá detenerse.
+
+En cada paso, tendremos entonces dos extremos $a$
+y $b$, y lo que sabemos en todo momento es que el mínimo que estamos buscando está dentro de este intervalo. Es decir, una posición con el valor mínimo que buscamos se encuentra seguro en $[a,b)$. Al final, cuando tengamos $b=a+1$, es decir, cuando tengamos un intervalo de longitud $1$, habremos localizado el mínimo.
+
+La gran diferencia está en que búsqueda binaria en cada paso examina la situación en la posición central, separando todo el intervalo que estamos analizando en dos partes. La búsqueda ternaria, como sugiere su nombre, separa el intervalo en tres partes, y para ello examina el valor de la función en los dos puntos de división entre las partes.
+
+Es decir, vamos a examinar dos posiciones dentro de nuestro intervalo, $m1$ y $m2$, con $a≤m1<m2<b$.
+
+Si $f(m1)≤f(m2)$, sabemos que necesariamente $m2$ ya pasó la primera parte inicial, en la que la función decrece estrictamente: si no fuera así, la función decrecería siempre estrictamente entre $m1$ y $m2$, y sería imposible observar lo que estamos observando. Por lo tanto, como el valor mínimo que buscamos se puede encontrar siempre en el último punto de la parte decreciente, y este está más a la izquierda que $m2$, asignaremos $b=m2$. Observemos que no podemos asignar $b$ a nada más pequeño con seguridad: podría ser que el mínimo estuviera de hecho en $m2−1$, y que la razón por la que vemos que $f(m1)<f(m2)$ fuera que la función tenga un aumento enorme entre $m2−1$ y $m2$, que supere todo lo que venía bajando desde $m1$ hasta $m2−1$.
+
+Si $f(m1)>f(m2)$, con un razonamiento análogo podemos deducir que m1 está todavía estrictamente dentro de la primera parte, en la que la función está decreciendo estrictamente (pues sino, la función nunca decrecería entre $m1$ y $m2$), y entonces podemos poner $a=m1+1$, ya que el mínimo tiene que estar sí o sí más a la derecha que $m1$. No podemos poner a en nada más grande, ya que podría pasar que el máximo esté en efecto en $m1+1$: por ejemplo, eso ocurriría si la razón por la que es $f(m1)>f(m2)$ fuera que la función tiene un enorme decrecimiento entre $m1$ y $m1+1$, que compense lo que luego sube desde $m1+1$ hasta $m2$.
+
+Para elegir $m1$ y $m2$, partimos al intervalo $[a,b)$ en tres, tomando: $m1=a+⌊b−a3⌋$, $m2=a+⌊2(b−a)3⌋$
+
+Si $b−a>1$, estos dos valores $m1$ y $m2$ son siempre distintos entre sí, y caen dentro del rango $[a,b)$. Además, estando $m1$ y $m2$ dentro del rango, los reemplazos $a=m1+1$ y $b=m2$ siempre achican el rango, así que el procedimiento va a llegar en algún momento a tener un rango de un único elemento, que será el mínimo. 
+
+Por lo tanto, de esta forma tenemos demostrada la proposición.
 
 **Idea general de solución:** 
 Para solucionar el problema, ahora solo será necesario buscar la altura óptima utilizando el algoritmo de *Búsqueda Ternaria*, luego durante la ejecución de la búsqueda ternaria se ejecuta la solución con el método $solve(...)$ con la mejor complejidad encontrada hasta el momento y se procede a calcular el mínimo número de operaciones para las dos alturas que dividen cada instancia del espacio de búsqueda en tres secciones de igual tamaño. Finalmente, se retorna el mínimo valor al que converja la función unimodal $f(h) = r$ definida anteriormente.
