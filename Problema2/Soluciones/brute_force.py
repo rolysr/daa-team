@@ -13,7 +13,7 @@ class Graph:
             self.adyacents[node_x].append((node_y, edge_weight))
             self.adyacents[node_y].append((node_x, edge_weight))
 
-def brute_force(n, m, q, edges, useful_paths_tuples):
+def brute_force(n, m, edges, useful_paths_tuples):
     g = Graph(n, m, edges)
     total_useful_edges = set()
 
@@ -28,7 +28,7 @@ def brute_force(n, m, q, edges, useful_paths_tuples):
 def get_useful_edges(u, v, l, g):
     useful_edges = set()
     paths = []
-    get_paths(u, v, l, g, [False for i in range(g.n)], 0, [], paths)
+    get_paths(u, v, l, g, [False for i in range(2*g.m)], 0, [], paths)
     
     for path in paths:
         for edge in path:
@@ -45,11 +45,11 @@ def get_paths(u, v, l, g, visited, current_cost, current_path, total_paths):
     
     for ady in g.adyacents[u]:
         node, weight = ady
-        if not visited[node] and current_cost + weight <= l:
-            visited[u] = True
+        if not visited[(u,node)] and current_cost + weight <= l:
+            visited[(u,node)] = True
             current_cost += weight
             current_path.append((u, node))
             get_paths(node, v, l, g, visited, current_cost, current_path, total_paths)
-            visited[u] = False
+            visited[(u,node)] = False
             current_cost -= weight
             current_path.pop()
