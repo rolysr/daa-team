@@ -6,7 +6,7 @@ from Soluciones.graph import Graph
 
 def dijkstra_qe(n, m, edges, useful_paths_tuples):
     g = Graph(n, m, edges)
-    useful_edge = {i:False for i in m}
+    useful_edge = {i:False for i in range(m)}
     node_dist = [None for i in range(n)]
     total_useful_edges = 0
     

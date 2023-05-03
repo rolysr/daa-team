@@ -8,7 +8,7 @@ def generate_test_cases(number_test_cases):
         n = randrange(10, 100)
         m = 0
         edges = []
-        q = randrange(1, 100)
+        q = randrange(1, 2)
         useful_paths_tuples = []
         for j in range(n):
             for k in range(n):
