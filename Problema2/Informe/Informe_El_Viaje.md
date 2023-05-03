@@ -1,4 +1,4 @@
-# Informe sobre solución al problema: ¿Jenga?
+# Informe sobre solución al problema: El Viaje
 ## Equipo: $D^{aa}$
 ## Integrantes:
  - Andry Rosquet Rodríguez - C411
