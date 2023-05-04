@@ -5,7 +5,7 @@ from Soluciones.graph import Graph
 
 def dijkstra_foreach_qe(n, m, edges, useful_paths_tuples):
     g = Graph(n, m, edges)
-    useful_edge = {i:False for i in range(m)}
+    useful_edge = [False for i in range(m)]
     total_useful_edges = 0
     
     for useful_path_tuple in useful_paths_tuples:
