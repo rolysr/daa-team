@@ -17,6 +17,19 @@ El desarrollo de la mejor solución encontrada al problema se expone de manera i
 
 ### **2.1) Solución Fuerza Bruta:**
 
+Se desea obtener el número de aristas útiles del grafo según las $Q-tuplas$ de la forma $u$, $v$, $l$ donde $u$ será el origen, $v$ el destino y $l$ el costo máximo de los caminos útiles de un nodo al otro.
+Para llevar a cabo dicho cálculo; el algoritmo buscará, para una $Q-tupla$ dada, todos los caminos útiles. Finalmente, obteniendo estos caminos tendríamos las aristas útiles, que serán aquellas que forman dichos caminos.
+Se desea encontrar los caminos con menor costo que $l$ partiendo de $u$ y llegando a 4v$. El algoritmo entonces se posicionará en el nodo u del grafo y analizará que ocurre si avanza a cada nodo adyacente de $u$. Este procedimiento lo continuará haciendo para cada nodo, asegurando encontrar todos los posibles caminos válidos (formado por aristas consecutivas o retrocediendo en ella misma) del grafo mediante combinaciones de aristas partiendo desde $u$. El algoritmo comprueba en cada paso que al tomar una nueva arista, el costo de esta sumado al camino actual no sobrepase $l$. Por tanto, el algoritmo no es infinito porque este tiene como condición de parada que el costo total de las aristas del camino no exceda a $l$, permitiendo que la cantidad de caminos sea finito. La condición de parada además es la que permite que al no sobrepasar $l$, el camino sea útil en caso de que el nodo final sea $v$.
+Como el algoritmo nos proveerá de los caminos útiles, solo resta agrupar las aristas que se encuentran en alguno de estos caminos, obteniendo el conjunto deseado para la q-tupla que se analizó. Si se repite el proceso para cada tupla de $Q$ obtendríamos lo mismo para cada una y por tanto el resultado final es el conjunto deseado. 
+
+**Idea general de solución:**
+El método $brute_force$ será el que itere por cada tupla de $Q$ y haga un llamado a $get_useful\_edges$ con la información del grafo y de la tupla que se desea analizar. El método $get\_useful_edges$ hará un llamado de $get\_paths$ esperando obtener todos los caminos útiles para luego solo extraer cada arista de cada camino útil. Por tanto, $get_\paths$ será el encargado de recursivamente recorrer el grafo para analizar todos los posibles caminos y de estos solo guardar en total_paths aquellos que sean útiles. Notar como el algoritmo itera por cada nodo adyacente que tiene el nodo en que se encuentra el final del camino actual, no se excluye alguno que haya sido visitado, ni tampoco de donde viene en el llamado recursivo anterior (nodo adyacente que fue el final provisional del camino antes de visitar el nodo actual).
+
+**Pseudocódigo:**
+```
+
+```
+
 ### **2.2) Solución con Dijkstra para cada arista y tupla de Q:**
 
 ### **2.3) Solución con Dijkstra precalculado y análisis para cada arista y tupla de Q:**
@@ -25,7 +38,7 @@ Luego de analizada la solución de la subsección **2.2)**, una idea interesante
 Luego, teniendo en cuenta las ideas anteriores, solo es necesario recorrer cada una de las tuplas $Q$ y ejecutar un Dijkstra por cada uno de los nodos $u$ y $v$ que formen parte de estas, y si alguno ya fue calculado, se podrá saber por el contenido en $node\_dist$. Luego se procede a realizar el mismo procedimiento que en el algoritmo de la subsección anterior, donde se analiza para cada tupla en $Q$ y por cada arista en el grafo dado, si esta pertenece a algún camino de $u$ a $v$ con costo menor que $l$, lo cual demostramos anteriormente que denotaremos por carretera útil.
 
 **Idea general de solución:** 
-Primeramente, se itera por cada tupla del conjuno $Q$, donde se va rellenando una lista $node\_dist$, la cual contiene para cada índice $i$ el array de distancia resultante de aplicar el algoritmo de Dijkstra sobre el nodo $i$ como fuente. La forma de colocar los valores en dicho array es peguntar para cada nodo $u$ y $v$ de la tupla $(u, v, l) \in Q$ si se calculó previamente el array de Dijkstra de distancia a partir de este en el grafo dado, en caso negativo se realiza un llamado al método $dijkstra(...)$ el cual utilizamos en la solución de la sección **2.2)**. Una vez calculado dichos valores de $dijkstra$, realizamos el mismo procedimiento que en la subsección anterior, donde para cada tupla en $Q$ se analiza cada arist del grafo y se evalúa el predicado que utilizamos para determinar si esta es útil teniendo en cuenta que solo debemos indexar por el valor de distancia precalculado en el array $node\_dist$. Finalmente, se mantiene la misma idea que la solución anterior, se aumena en $1$ la respuesta por cada vez que se 
+Primeramente, se itera por cada tupla del conjuno $Q$, donde se va rellenando una lista $node\_dist$, la cual contiene para cada índice $i$ el array de distancia resultante de aplicar el algoritmo de Dijkstra sobre el nodo $i$ como fuente. La forma de colocar los valores en dicho array es peguntar para cada nodo $u$ y $v$ de la tupla $(u, v, l) \in Q$ si se calculó previamente el array de Dijkstra de distancia a partir de este en el grafo dado, en caso negativo se realiza un llamado al método $dijkstra(...)$ el cual utilizamos en la solución de la sección **2.2)**. Una vez calculado dichos valores de $dijkstra$, realizamos el mismo procedimiento que en la subsección anterior, donde para cada tupla en $Q$ se analiza cada arista del grafo y se evalúa el predicado que utilizamos para determinar si esta es útil, teniendo en cuenta que solo debemos indexar por el valor de distancia precalculado en el array $node\_dist$. Finalmente, se mantiene la misma idea que la solución anterior, se aumenta en $1$ la respuesta por cada vez que se encuentra una arista útil.
 
 **Pseudocódigo:**
 ```
