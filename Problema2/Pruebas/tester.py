@@ -1,8 +1,10 @@
+from Soluciones.dijsktra_foreach_qe import dijkstra_foreach_qe
+from Soluciones.dijkstra_qe import dijkstra_qe
 from Pruebas.test_cases_generator import generate_test_cases
 from Soluciones.brute_force import brute_force
 
 
-def test_solution(solution_function, test_function=brute_force):
+def test_solution(solution_function, test_function=dijkstra_foreach_qe):
     """
         Tester function to determine how good is a given
         solution function

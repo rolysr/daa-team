@@ -5,7 +5,7 @@
  - Rolando Sánchez Ramos - C411
 
 ## **1) Introducción al problema:**
-En el archivo [El Viaje]() nos definen un problema donde se tiene un grafo conexo, no dirigido, con aristas con costo no negativo ($\geq 0$). Además, en el problema se tiene un grupo $Q$ de tuplas de la forma $(u, v, l)$, las cuales son fundamentales para los caminos y carreteras útiles en el grafo.
+En el archivo [El Viaje]() nos definen un problema donde se tiene un grafo conexo, no dirigido, con aristas con costo no negativo ($\geq 0$). Además, en el problema se tiene un grupo $Q$ de tuplas de la forma $(u, v, l)$, las cuales son fundamentales para los caminos y carreteras útiles en el grafo. El número de nodos y aristas del grafo serán denotados por $n$ y $m$ respectivamente en el resto del documento.
 
 En el contexto del problema, un camino útil es un camino entre algún par de nodos $u$ y $v$ presentes en alguna tupla en $Q$ tal que el costo de las aristas de dicho camino sea menor o igual que $l$. Luego, una carretera útil sería una arista perteneciente a dicho camino útil.
 
@@ -93,7 +93,7 @@ El algoritmo en $dijkstra\_foreach\_qe$ iterará por cada tupla de $Q$ donde se 
 
 **Pseudocódigo:**
 ```
-def dijkstra_foreach_qe(n, m, edges, useful_paths_tuples):
+dijkstra_foreach_qe(n, m, edges, useful_paths_tuples):
     g = Graph(n, m, edges)
     useful_edge = [False for i in range(m)]
     total_useful_edges = 0
@@ -113,7 +113,7 @@ def dijkstra_foreach_qe(n, m, edges, useful_paths_tuples):
 
     return total_useful_edges
 
-def dijkstra(s, g):
+dijkstra(s, g):
     dist = [math.inf for i in range(g.n)]
     dist[s] = 0
 
@@ -148,8 +148,7 @@ def dijkstra(s, g):
 ```
 
 **Complejidad Temporal**
-Sabemos que la complejidad temporal de Dijkstra es $O(mlogn$) donde si el grafo es denso $m=n^2$. En el método $dijkstra\_foreach\_qe$ cuando se itera por las tuplas($|Q|=q$) mientras se calculan los Dijkstras para luego iterar por cada arista se obtiene una complejidad temporal $O(q*(mlogn+m)$). El resto de operaciones dentro de la iteración por las aristas como son pedir las distancias precalculadas o verificar si ya la arista es útil se llevan a cabo en $O(1)$.
-
+Sabemos que la complejidad temporal de Dijkstra es $O(mlogn$) donde si el grafo es denso $m \approx n^2$. En el método $dijkstra\_foreach\_qe$ cuando se itera por las tuplas($|Q|=q$) mientras se calculan los Dijkstras para luego iterar por cada arista se obtiene una complejidad temporal $O(q*m^2\log{n})$. El resto de operaciones dentro de la iteración por las aristas como son pedir las distancias precalculadas o verificar si ya la arista es útil se llevan a cabo en $O(1)$, lo cual es posible gracias a un preprocesamiento en $O(n + m)$, donde se crea una instancia del grafo a recorrer y se crea un array booleano para indicar si una arista es útil o no y así ahorrarnos el volver a verificar dicha condición. Finalmente, la complejidad total considerando preprocesamiento sería $O(n + m + q*m^2\log{n})$ y como el grafo es conexo, entonces el algoritmo tiene complejidad $O(q*m^2\log{n})$
 
 ### **2.3) Solución con Dijkstra precalculado y análisis para cada arista y tupla de Q:**
 Luego de analizada la solución de la subsección **2.2)**, una idea interesante para mejorarla es realizar los llamados al algoritmo de Dijkstra solamente para los nodos que así lo requieran, en este caso, dado que en la solución anterior se realiza más de una vez el algoritmo de Dijkstra en caso de si un nodo $u$ aparece más de una vez como extremo de alguna tupla del conjunto $Q$, sería más óptimo si estos mismo llamos se precalculan en un array $node\_dist$ el cual sea un array donde en su índice $i$ almacene el valor del Dijkstra calculado para el nodo $i$ si fue necesario y se guarde un valor nulo (*None* en caso de Python) para aquellos para los cuales no fue necesario calcularlo.
@@ -191,11 +190,80 @@ dijkstra_qe(n, m, edges, useful_paths_tuples):
 **Complejidad Temporal**
 En las primeras líneas del algoritmo se realiza una fase de preprocesamiento donde se construye un grafo en $O(n + m)$ donde $n$ y $m$, es la cantidad de nodos y aristas del grafo, luego, se inicializa el array $useful\_edges$ donde para la arista $i$ se determina si esta es útil o no y dicha inicialización es realizada en $O(m)$. Posteriormente, se procede a inicializar el array $node\_dist$ en $O(n)$.
 
-Para actualizar los valores de $node\_dist$ se recorre el conjunto $Q$ y se analiza por cada tupla los nodos $u$ y $v$ y se procede a determinar el array resultante de aplicar el algoritmo de Dijkstra sobre estos en caso de que no hayan sido calculados. Dicho procedimiento se ejecuta en $O(q*(mlogm))$ para el peor caso donde el grafo fuese denso y donde $q$ denota el tamaño de $Q$.
+Para actualizar los valores de $node\_dist$ se recorre el conjunto $Q$ y se analiza por cada tupla los nodos $u$ y $v$ y se procede a determinar el array resultante de aplicar el algoritmo de Dijkstra sobre estos en caso de que no hayan sido calculados. Dicho procedimiento se ejecuta en $O(q*(mlogn))$ y donde $q$ denota el tamaño de $Q$.
 
 En la última sección del algoritmo, se analiza cada arista del grafo por cada tupla de $Q$ y se procede a verificar el predicado para determinar si una arista es útil, teniendo los valores necesarios de distancia precalculados, los cuales pueden ser accedidos en $O(1)$.
 
-Finalmente, la complejidad del algoritmo sería $O(n + m + m + n + q*(m\log{m}) + q*m) = O(m + n + q*(m\log{m}) + q*m)$.
+Finalmente, la complejidad del algoritmo sería $O(n + m + m + n + q*(m\log{n}) + q*m) = O(m + n + q*(m\log{n}) + q*m)$ y como el grafo es conexo, entoces la complejidad final sería $O(q*(m\log{n}))$.
+
+### **2.4) Solución aplicando Floyd-Warshall para cuando el grafo dado es denso ($m \approx n^2$):**
+Cuando el grafo es denso, es decir, $m \approx n^2$, es posible que se presente el peor caso, donde dadas las tuplas del conjunto $Q$, se deba calcular el camino de costo mínimo desde cada nodo del grafo a todos los demás. Para este caso, aplicar el algoritmo de Dijkstra para cada uno de los nodos del grafo tendría una complejidad de $O(n*m\log{n})$ pero como el grafo es denso ($m \approx n^2$), entonces se obtendría como complejidad $O(n^3\log{n})$. Resulta que, si se utiliza el algoritmo de Floy-Warshall es posible mejorar la complejidad anterior, ya que este funciona en $O(n^3)$ y obtiene el mismo resultado que la idea anterior. Luego, dado que $n^3 \leq n^3\log{n}$, entonces sería óptimo si se ejecutara una sola vez el algoritmo Floyd-Warshall en vez del algoritmo de Dijkstra $n$ veces.
+
+**Idea general de solución:** 
+La idea del algoritmo consiste en determinar primeramente si el grafo dado de entrada es denso, y si se cumple que en el conjunto $Q$ se necesita calcular de antemano los caminos de costo mínimo para cada nodo del grafo respecto a los demás; en caso negativo se procede a calcular la respuesta que ofrece la solución de la sección **2.3)** y en caso contrario se ejecuta prácticamente el mismo algoritmo que la sección **2.3)** exceptuando el precálculo de los caminos de costo mínimo necesarios, el cual se sustituye por el algoritmo Floy-Warshall solamente.
+
+**Pseudocódigo:**
+```
+dijsktra_floyd_warshall(n, m, edges, useful_paths_tuples):
+    number_dist_nodes = get_number_dist_nodes(n, useful_paths_tuples)
+
+    if number_dist_nodes < n or m < (n*(n-1))/2:
+        return dijkstra_qe(n, m, edges, useful_paths_tuples)
+
+    useful_edge = [False for i in range(m)]
+    node_dist = [None for i in range(n)]
+    total_useful_edges = 0
+    
+    node_dist = floyd_warshall(n, edges)
+    
+    for useful_path_tuple in useful_paths_tuples:
+        u, v, l = useful_path_tuple
+        for i in range(m):
+            edge = edges[i]
+            if useful_edge[i]:
+                continue
+            x, y, weight = edge
+            if node_dist[u][x] + weight + node_dist[v][y] <= l or node_dist[u][y] + weight + node_dist[v][x] <= l:
+                useful_edge[i] = True
+                total_useful_edges += 1
+
+    return total_useful_edges
+
+get_number_dist_nodes(n, useful_paths_tuples):
+    node_calculated = [False for i in range(n)]
+    answer = 0
+    for tuple in useful_paths_tuples:
+        u, v, l = tuple
+        if not node_calculated[u]:
+            node_calculated[u] = True
+            answer += 1
+        if not node_calculated[v]:
+            node_calculated[v] = True
+            answer += 1
+        if answer == n:
+            break
+    return answer
+
+floyd_warshall(n, edges):
+    dist = [[inf for i in range(n)] for i in range(n)]
+    for i in range(n):
+        dist[i][i] = 0
+
+    for edge in edges:
+        u, v, weight = edge
+        dist[u][v] = weight
+        dist[v][u] = weight
+
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+
+    return dist
+```
+El algoritmo comienza con la ejecución del método *get_number_dist_nodes*, el cual es utilizado para verificar si todo nodo del grafo está presente en alguna tupla de $Q$, con lo cual se verifica si es necesario calcular los caminos de costo mínimo para todo nodo del grafo; luego, dicho método se ejecuta en $O(n + q)$ ya que se inicializa una estructura que guarda cuáles nodos aparecen para ser calculados los caminos de costo mínimo en $O(n)$ y luego se analiza por cada tupla de $Q$ cuáles nodos aparecen. Luego, si se cumple que el grafo no es denso o no se necesita calcular los caminos de costo mínimo para todos los nodos hacia los demás, se procede a ejecutar el algoritmo de la sección **2.3)** el cual se ejecuta en $O(q*(m\log{n}))$. Luego, si se cumple que el grafo es denso y se necesita calcular el camino de costo mínimo de cada nodo a todos los demás del grafo, entonces, se realiza un peprocesamiento en $O(n + m)$, donde se inicializa el marcado de utilidad de las aristas y el array de distancias mínimas precalculadas para cada nodo. Posteriomente, se precalculan todos los caminos de costo mínimo entre todo par de nodos con el algoritmo de Floy-Warshall en $O(n^3)$ y finalmente se realiza el mismo proceso que en la solución **2.3)** para las distancias precalculadas analizando para cada tupla en $Q$, todas las aristas posibles y su utilidad respecto a dicha tupla, lo cual se ejecuta en $O(q*m)$ pero como el caso en las condiciones dadas es denso, entonces $O(q*m) \approx O(q*n^2)$, por lo cual, para dichas condiciones, el algoritmo se ejecuta en $O(n + m + n^3 + q*n^2) = O(n^3 + q*n^2) = O(max(n^3, q*n^2))$, donde se decide dependiendo de si $q > n$ o no. Finalmente, el algoritmo general tiene complejidad $O(min(q*m\log{n}, n^3 + q*n^2))$, dependiendo si se cumple el peor caso o no respecto a lo anteriormente expuesto.
+
+**Complejidad Temporal:**
 
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.

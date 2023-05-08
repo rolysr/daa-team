@@ -1,3 +1,4 @@
+from Soluciones.dijkstra_floyd_warshall import dijsktra_floyd_warshall
 from Pruebas.algos_output_tester import check_results
 from Soluciones.brute_force import brute_force
 from Soluciones.dijkstra_qe import dijkstra_qe
@@ -25,4 +26,4 @@ if __name__ == "__main__":
 
     print(dijkstra_qe(n, m, edges, useful_paths_tuples))
 
-    # print(test_solution(solution_function=dijkstra_foreach_qe, test_function=dijkstra_qe))
+    # print(test_solution(solution_function=dijsktra_floyd_warshall, test_function=dijkstra_qe))
