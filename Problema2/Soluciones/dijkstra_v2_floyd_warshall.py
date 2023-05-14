@@ -19,7 +19,7 @@ def dijkstra_v2_floyd_warshall(n, m, edges, useful_paths_tuples):
 
     for i in range(n):
         endpoint_node = i
-        if useful_paths_tuples_endpoint_nodes[endpoint_node] is None:
+        if useful_paths_tuples_endpoint_nodes[endpoint_node] is []:
             continue
         # compute Dijkstra in O(v^2)
         ui_li_endpoint_node_list = useful_paths_tuples_endpoint_nodes[endpoint_node]
@@ -30,7 +30,7 @@ def dijkstra_v2_floyd_warshall(n, m, edges, useful_paths_tuples):
         # check useful edges
         for i in range(m):
             x, y, weight = edges[i]
-            if min_dist[y] <= - node_dist[endpoint_node][x] - weight or  min_dist[x] <= - node_dist[endpoint_node][y] - weight:
+            if not useful_edge[i] and (min_dist[y] <= - node_dist[endpoint_node][x] - weight or  min_dist[x] <= - node_dist[endpoint_node][y] - weight):
                 useful_edge[i] = True
                 total_useful_edges += 1
 
@@ -41,24 +41,20 @@ def get_useful_paths_tuples_endpoint_nodes(n, useful_paths_tuples):
     for q in useful_paths_tuples:
         u, v, l = q
         if not v in useful_paths_tuples_endpoint_nodes[u]:
-            if useful_paths_tuples_endpoint_nodes[u] is None:
-                useful_paths_tuples_endpoint_nodes[u] = []
             useful_paths_tuples_endpoint_nodes[u].append((v, l))
         if not u in useful_paths_tuples_endpoint_nodes[v]:
-            if useful_paths_tuples_endpoint_nodes[v] is None:
-                useful_paths_tuples_endpoint_nodes[v] = []
             useful_paths_tuples_endpoint_nodes[v].append((u, l))
     return useful_paths_tuples_endpoint_nodes
 
 def dijkstra_v2(node, g):
     dist = [math.inf for i in range(g.n)]
-    dist[g.n - 1] = 0
-    for ady in g.adyacents[g.n-1]:
-        ui, weight = ady
-        dist[ui] = weight
+    dist[node] = 0
+    # for ady in g.adyacents[node]:
+    #     ui, weight = ady
+    #     dist[ui] = weight
     
     visited = [False for i in range(g.n)]
-    q = [(0, g.n-1)]
+    q = [(0, node)]
 
     while len(q) > 0:
         node_distance, node = extract_min(q)  # get node with minimum distance
@@ -89,8 +85,7 @@ def extract_min(q):
         if min_value is None:
             min_value = tuple
         elif min_value[0] > tuple[0]:
-            min_value[0] = tuple[0]
-            min_value[1] = tuple[1]
+            min_value = (tuple[0], tuple[1])
     q.remove(min_value)
     return min_value
 

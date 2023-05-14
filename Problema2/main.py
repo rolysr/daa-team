@@ -25,6 +25,8 @@ if __name__ == "__main__":
     #     u, v, l = int(u), int(v), int(l)
     #     useful_paths_tuples.append((u, v, l))
 
-    # print(dijkstra_qe(n, m, edges, useful_paths_tuples))
+    # print(dijkstra_v2_floyd_warshall(n, m, edges, useful_paths_tuples))
 
-    print(test_solution(solution_function=dijkstra_v2_floyd_warshall, test_function=dijkstra_qe))
+    # print(test_solution(solution_function=dijkstra_v2_floyd_warshall, test_function=dijkstra_qe))
+
+    check_results()
