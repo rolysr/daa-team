@@ -269,10 +269,53 @@ floyd_warshall(n, edges):
 **Complejidad Temporal:**
 El algoritmo comienza con la ejecución del método *get_number_dist_nodes*, el cual es utilizado para verificar si todo nodo del grafo está presente en alguna tupla de $Q$, con lo cual se verifica si es necesario calcular los caminos de costo mínimo para todo nodo del grafo; luego, dicho método se ejecuta en $O(n + q)$ ya que se inicializa una estructura que guarda cuáles nodos aparecen para ser calculados los caminos de costo mínimo en $O(n)$ y luego se analiza por cada tupla de $Q$ cuáles nodos aparecen. Luego, si se cumple que el grafo no es denso o no se necesita calcular los caminos de costo mínimo para todos los nodos hacia los demás, se procede a ejecutar el algoritmo de la sección **2.3)** el cual se ejecuta en $O(q*(m\log{n}))$. Luego, si se cumple que el grafo es denso y se necesita calcular el camino de costo mínimo de cada nodo a todos los demás del grafo, entonces, se realiza un preprocesamiento en $O(n + m)$, donde se inicializa el marcado de utilidad de las aristas y el array de distancias mínimas precalculadas para cada nodo. Posteriomente, se precalculan todos los caminos de costo mínimo entre todo par de nodos con el algoritmo de Floy-Warshall en $O(n^3)$ y finalmente se realiza el mismo proceso que en la solución **2.3)** para las distancias precalculadas analizando para cada tupla en $Q$, todas las aristas posibles y su utilidad respecto a dicha tupla, lo cual se ejecuta en $O(q*m)$ pero como el caso en las condiciones dadas es denso, entonces $O(q*m) \approx O(q*n^2)$, por lo cual, para dichas condiciones, el algoritmo se ejecuta en $O(n + m + n^3 + q*n^2) = O(n^3 + q*n^2) = O(max(n^3, q*n^2))$, donde se decide dependiendo de si $q > n$ o no. Finalmente, el algoritmo general tiene complejidad $O(min(q*m\log{n}, n^3 + q*n^2))$, dependiendo si se cumple el peor caso o no respecto a lo anteriormente expuesto.
 
-### **2.4) Solución aplicando Dijkstra en  $\Omicron(m\log{n})$ cuando $q, m \leq n$ y aplicando Floyd-Warshall y Dijkstra en $\Omicron(n^2)$:**
+### **2.5) Solución aplicando Dijkstra en  $\Omicron(m\log{n})$ cuando $q, m \leq n$ y aplicando Floyd-Warshall y Dijkstra en $\Omicron(n^2)$:**
 Para las soluciones anteriores no se tiene en consideración el tamaño del conjunto $Q$ en el sentido de que no se presta atención a, si por ejemplo, este conjunto pudiese ser exactamente el conjunto de las aristas, especialmente en el caso en que el grafo es denso. Debido a esto, el algoritmo anteriormente descrito podría tener como complejidad $O(min(n^2*m\log{n}, n^3 + n^2*n^2)) = O(min(n^2*m\log{n}, n^4))$, en dependencia de si el grafo es denso o no.
-En ambas soluciones propuestas en dependencia de la densidad del grafo y la cantidad de nodos distintos que aparecen en $Q$, se realiza el análisis de utilidad de una arista iterando por cada una de las consultas $Q$ y luego, por cada tupla $q_i \in Q$ se analizan todas las aristas del grafo determinando aquellas que sean útiles para la arista en cuestión.
 
+En ambas soluciones propuestas en dependencia de la densidad del grafo y la cantidad de nodos distintos que aparecen en $Q$, se realiza el análisis de utilidad de una arista iterando por cada una de las consultas $Q$ y luego, por cada tupla $q_i \in Q$ se analizan todas las aristas del grafo determinando aquellas que sean útiles para la arista en cuestión. Ahora, dada la proposición **2.2.1)**, podemos realizar un relajamiento de la condición de arista útil que nos evite tener que analizar todo el conjunto $Q$ al momento de determinar la utilidad de una arista. La idea consiste en considerar todos los triplos $q_i \in Q$ con un extremo fijo, luego, la idea sería básicamente hallar las aristas útiles para dichos triplos, donde se realiza un preprocesamiento para tener para cada nodo extremo de alguna tupla en $Q$, el conjunto de tuplas de la forma $(u_i, l_i)$ que serían los posibles otros extremos y el costo $l$ correspondiente al triplo donde aparecen en $Q$.
+
+Teniendo en cuenta lo anterior, sea la arista $(x, y, w)$ que pertenece al grafo, esta es útil para un conjunto de triplos asociados a un nodo fijo $v$, ($(v, u_i, l_i) \in Q$) si se cumple la proposición **2.2.1)** para alguno de dichos triplos. Formalmente, esto sería comprobar $dist(v,a)+w+dist(b,u_i) \leq l_i$ para alguna de dichos triplos asociados a $v$, luego, podemos llevar dicha expresion a una forma más cómoda: $dist(v,x)+w+dist(y,u_i) \leq l_i \Leftrightarrow −l_i+dist(u_i,y)≤−w−dist(v,x)$. Luego debemos notar que la parte derecha de la expresión puede ser precalculada una sola vez, ya que depende solo del costo de $w$ y de la distancia de $v$ a $x$, lo cual podría hacerse perfectamente con el algoritmo de Floyd-Warshall aplicado una vez. En el caso del miembro izquierdo de dicha desigualdad, solo es necesario notar que haría falta encontrar algún valor $−l_i+dist(u_i,y)$ para algún $i$ tal que cumpla la expresión deseada. Esto puede hacerse hallando el mínimo posible que podría dar dicha expresión para los valores posibles. Esto podría hacerse ejecutando un Dijkstra en $O(n^2)$ (para mejorar la complejidad general del algoritmo) que halle la distancia mínima desde todos los posibles $u_i$ hacia el nodo $y$. Dicho Dijkstra debe realizarse sobre una modificación del algoritmo original, esta vez orientado a múltiples fuentes, lo cual, de las clases de la asignatura $EDA$, está demostrado que puede hacerse con una construcción auxiliar de un nodo ficticio de origen que se agrega con una arista hacia cada $u_i$, donde dicha arista tendría costo $-l_i$. Finalmente, si se ejecuta el Dijkstra desde dicho nodo ficticio, en el array resultante del Dijkstra evaluado en el nodo $y$ contendrá el mínimo costo de un camino de $u_i$ hacia $y$ donde se le reste el valor $l_i$, lo cual, en otras palabras sería el valor $min(−l_i+dist(u_i,y))$. Luego, la respuesta de si la arista dada es útil depende del cumplimiento de la condición $dist\_dijkstra\_v2(y) \leq - w - dist(v, x)$.
+
+**Idea general de solución:**
+Dadas las ideas anteriores, el algoritmo consiste primeramente, determinar si el problema cumple que $q, m \leq n$, en cuyo caso ejecutamos el algoritmo de la sección $2.3$ ya que es más eficiente para dichas condiciones. Luego, en caso contrario, se ejecutar el algoritmo anteriormente descrito, el cual consiste en primeramente calcular el array de distancias resultante del algoritmo Floyd-Warshall, luego, se realiza un preprocesamiento donde se determina para cada nodo $v$, las tuplas $(u_i, l_i)$, lo cual facilitará la construcción del grafo auxiliar referente a dicho nodo y la ejecución del Dijkstra propuesto. Finalmente, se itera por todos los nodos, donde para cada nodo que aparece en alguna tupla en $Q$, se ejecuta un Dijkstra sobre el grafo auxiliar que tiene un nodo ficticio con arista de costo $-l_i$ hacia todo nodo $u_i$ que aparece como otro extremo de alguna tupla donde el nodo por el cual se itera actualmente es el otro extremo. Finalmente, se analiza si $dist\_dijkstra\_v2(y) \leq - w - dist(v, x)$ y si $dist\_dijkstra\_v2(x) \leq - w - dist(v, y)$ (ya que debe comprobarse en ambos sentidos para mantener el cumplimiento del resultado de la proposición **2.2.1**) para cada posible arista $(x, y, z)$, para determinar si esta es útil y finalmente se actualiza en caso positivo la variable que almacena el número de aristas útiles.
+
+**Pseudocódigo:**
+```
+dijkstra_v2_floyd_warshall(n, m, edges, useful_paths_tuples):
+    if len(useful_paths_tuples) <= n and m <= n:
+        return dijkstra_qe(n, m, edges, useful_paths_tuples)
+    
+    g = Graph(n, m, edges)
+    useful_edge = [False for i in range(m)]
+    node_dist = [None for i in range(n)]
+    total_useful_edges = 0
+    
+    node_dist = floyd_warshall(n, edges)
+
+    useful_paths_tuples_endpoint_nodes = get_useful_paths_tuples_endpoint_nodes(n, useful_paths_tuples)
+
+    for i in range(n):
+        endpoint_node = i
+        if useful_paths_tuples_endpoint_nodes[endpoint_node] is []:
+            continue
+        # compute Dijkstra in O(v^2)
+        ui_li_endpoint_node_list = useful_paths_tuples_endpoint_nodes[endpoint_node]
+        new_g = create_multisource_graph_ui_li(ui_li_endpoint_node_list, g)
+        source_node = new_g.n - 1
+        min_dist = dijkstra_v2(source_node, new_g)
+        
+        # check useful edges
+        for i in range(m):
+            x, y, weight = edges[i]
+            if not useful_edge[i] and (min_dist[y] <= - node_dist[endpoint_node][x] - weight or  min_dist[x] <= - node_dist[endpoint_node][y] - weight):
+                useful_edge[i] = True
+                total_useful_edges += 1
+
+    return total_useful_edges
+```
+
+**Complejidad Temporal:**
+Para el algoritmo anterior, la complejidad para cuando $q, m \leq n$ se cumple que es $O(q*m\log{n})$, ya que se ejecuta el algoritmo demostrado en la seccion **2.3)**. Luego, para la idea propuesta cuando se dan los peores casos, se tiene una ejecución de Floy-Warshall en $O(n^3)$, luego el preanálisis de los nodos que son extremos de alguna tupla se realiza en $O(q*n)$, finalmente, por cada nodo extremo de alguna tupla de $Q$ se realiza un Dijkstra en su versión en $O(n^2)$ y luego se evalúa por cada arista el predicado para verificar su utilidad, lo cual se ejecuta en $O(n^2)$ en el peor caso cuando el grafo es denso. Finalmente, el algoritmo dado se ejecuta en $O(n^3 + n*q + n(n^2 + n^2)) = O(n^3 + n*q)$, lo cual puede se en el orden $n^3$ o $n*q$ en dependencia de si $q \leq n^2$. Finalmente, el algoritmo propuesto se mejora y se obtiene como complejidad final $O(min(q*m*\log{n}, n^3 + n*q))$.
 
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
