@@ -2,6 +2,7 @@ class Graph:
     def __init__(self, n, m, edges) -> None:
         self.n = n
         self.m = m
+        self.edges = edges
         self.adyacents = {}
         for i in range(n):
             self.adyacents[i] = []
