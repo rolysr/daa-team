@@ -30,7 +30,7 @@ def dijkstra_v2_floyd_warshall(n, m, edges, useful_paths_tuples):
         # check useful edges
         for i in range(m):
             x, y, weight = edges[i]
-            if min_dist[y] <= - node_dist[endpoint_node][x] - weight or  min_dist[y] <= - node_dist[endpoint_node][x] - weight:
+            if min_dist[y] <= - node_dist[endpoint_node][x] - weight or  min_dist[x] <= - node_dist[endpoint_node][y] - weight:
                 useful_edge[i] = True
                 total_useful_edges += 1
 
