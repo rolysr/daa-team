@@ -2,26 +2,32 @@ import copy
 from Soluciones.graph import Graph
 
 def brute_force(n, m, edges):
-    g = Graph(n, m, edges)
-    degrees = [0 for i in range(n)]
-    for edge in edges:
-        degrees[edge[0]]+=1
-    get_reduction(g,degrees)
- #   for i in g.nodes:
-#        k
-    return g
+    bitmask = [True for i in range(m)]
+
+    if m == 0 or is_valid_graph(n, m, edges, bitmask):
+        return True
+
+    for i in range(1, 2**m):
+        for j in range(m-1):
+            print(len(bitmask), j)
+            bitmask[j] = i & j
+        if is_valid_graph(n, m, edges, bitmask):
+            return True
+
+    return False
+
+def is_valid_graph(n, m, edges, bitmask):
+    degree_vertex = [0 for i in range(n)]
+
+    for i in range(m):
+        if bitmask[i]:
+            a, b = edges[i]
+            degree_vertex[a] += 1
+            degree_vertex[b] += 1
+            if degree_vertex[a] > 3 or degree_vertex[b] > 3:
+                return False
         
-def get_reduction(g,degrees):
-    cicle=True
-    temp=degrees
-    while cicle:
-        cicle=False
-        for i in range(len(temp)):
-            if temp[i] < 3 and temp[i] != 0:
-                g.delete_node(i)
-                cicle=True
-        if cicle:
-          temp=[0 for i in range(len(degrees))]  
-          for edge in g.edges:
-              temp[edge[0]]+=1          
-  
+    for degree in degree_vertex:
+        if degree != 3 and degree != 0:
+            return False
+    return True
