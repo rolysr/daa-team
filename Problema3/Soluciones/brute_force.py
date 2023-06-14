@@ -1,38 +1,36 @@
 import copy
 
 
-def brute_force1(n, m, edges):
+def brute_force_bitmask(n, m, edges):
     bitmask = [True for i in range(m)]
     
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
         return True
     
     for i in range(1, 2**m):
-        for j in range(m-1):
-            #print(len(bitmask), j)
-            bitmask[j] = i & j
+        for j in range(m):
+            bitmask[j] = True if i & (2**j) else False
         if is_valid_graph(n, m, edges, bitmask):
             return True
 
     return False
 
-def brute_force(n,m,edges):
+def brute_force_recursive(n, m, edges):
     bitmask = [True for i in range(m)]
-    if m== 0 or is_valid_graph(n,m,edges,bitmask):
-        print(True)
+    if m == 0 or is_valid_graph(n, m, edges, bitmask):
+        return True
     else:
-        print(brute_force_recursive(n,m,edges,bitmask,0))
+        return brute_force_recursion(n, m, edges, bitmask, 0)
 
-def brute_force_recursive(n, m, edges,bitmask,arist):
-    if arist== m:
-        print(bitmask)
-        return is_valid_graph(n,m,edges,bitmask)
+def brute_force_recursion(n, m, edges, bitmask, arist):
+    if arist == m:
+        return is_valid_graph(n, m, edges, bitmask)
     
     arist+=1
-    if brute_force(n,m,edges,bitmask,arist):
+    if brute_force_recursion(n, m, edges, bitmask, arist):
         return True
     bitmask[arist-1]=False
-    if brute_force(n,m,edges,bitmask,arist):
+    if brute_force_recursion(n, m, edges, bitmask, arist):
         return True
     bitmask[arist-1]=True
     

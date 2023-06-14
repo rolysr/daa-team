@@ -4,16 +4,15 @@ def generate_test_cases(number_test_cases):
     test_cases = []
 
     for i in range(number_test_cases):
-        n = randrange(5,6)
+        n = randrange(5,10) 
         m = 0
         edges = []
-        for j in range(n):
-            for k in range(n):
-                if j != k:
-                    edge = (j, k,)
+        for j in range(n-1):
+            for k in range(1, n):
+                if j != k and randrange(0, 2):
+                    edge = (j, k)
                     edges.append(edge)
                     m += 1
-
         test_cases.append((n, m, edges))
 
     return test_cases
