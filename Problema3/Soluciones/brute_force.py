@@ -17,7 +17,7 @@ def brute_force1(n, m, edges):
     return False
 
 def brute_force(n,m,edges):
-    bitmask = [True for i in range(a[0][1])]
+    bitmask = [True for i in range(m)]
     if m== 0 or is_valid_graph(n,m,edges,bitmask):
         print(True)
     else:
