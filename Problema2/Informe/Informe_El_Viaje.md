@@ -337,7 +337,7 @@ Output:
 ```
 
 - **Soluciones:**
-En esta carpeta se encuentran las distintas soluciones probadas para resolver el problema planteado. Todas contienen en esencia un método principal que recibe una entrada en el formato $n, m, edges, useful\_paths\_tuples$ donde $n$ y $m$ son la cantidad de nodos y arista del grafo respectivamente, $edges$ el es conjunto de aristas y $useful\_path\_tuples$ es el conjunto $Q$. Como salida de estos métodos se da un valor entero que representa el número de carreteras (aristas) útiles.
+En esta carpeta se encuentran las distintas soluciones probadas para resolver el problema planteado. Todas contienen en esencia un método principal que recibe una entrada en el formato $n, m, edges, useful\_paths\_tuples$ donde $n$ y $m$ son la cantidad de nodos y aristas del grafo respectivamente, $edges$ el es conjunto de aristas y $useful\_path\_tuples$ es el conjunto $Q$. Como salida de estos métodos se da un valor entero que representa el número de carreteras (aristas) útiles.
 
 - **Informe:** Constituye el resumen de los experimentos llevados a cabo en el proyecto y contiene las demostraciones que prueban la correctitud de los mismos.
 

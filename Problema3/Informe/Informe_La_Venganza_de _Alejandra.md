@@ -7,7 +7,7 @@
 ## **1) Introducción al problema:**
 En el archivo [La Venganza de Alejandra]() nos definen un problema donde se tiene un grafo, no dirigido, con aristas simples consideradas las relaciones entre los compañeros de Alejandra. El número de nodos y aristas del grafo serán denotados por $n$ y $m$ respectivamente en el resto del documento.
 
-La solución del problema consiste en determinar si es posible eliminar aristas del grafo,de manera, que el grafo resultante tenga a todos sus nodos con grado 3 ó 0, exceptuando el caso en que todos tengan grado 0. Lo anterior se traduce en que cada compañero de Alejandra termine com 3 o ninguna amistad.
+La solución del problema consiste en determinar si es posible eliminar aristas del grafo, de forma tal que el grafo resultante tenga a todos sus nodos con grado 3 ó 0, exceptuando el caso en que sea necesario eliminar todas las aristas del grafo para alcanzar tal condición. Lo anterior se traduce en que cada compañero de Alejandra termine com 3 o ninguna amistad.
 
 Por último, es importante mencionar que tanto nodos como aristas serán enumerados indexando en $0$. Es decir, el primer nodo del grafo es el $0$ y no el $1$, lo cual no influye en ningún momento en la complejidad de las soluciones planteadas.
 ## **2) Soluciones:**
@@ -31,14 +31,14 @@ El método, ya mencionado en par de ocasiones, encargado de comprobar la validez
 
 **Pseudocódigo:**
 ```
-def brute_force_recursive(n, m, edges):
+brute_force_recursive(n, m, edges):
     bitmask = [True for i in range(m)]
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
         return True
     else:
         return brute_force_recursion(n, m, edges, bitmask, 0)
 
-def brute_force_recursion(n, m, edges, bitmask, arist):
+brute_force_recursion(n, m, edges, bitmask, arist):
     if arist == m:
         return is_valid_graph(n, m, edges, bitmask)
     
@@ -52,7 +52,7 @@ def brute_force_recursion(n, m, edges, bitmask, arist):
     
     return False
 
-def is_valid_graph(n, m, edges, bitmask):
+is_valid_graph(n, m, edges, bitmask):
     degree_vertex = [0 for i in range(n)]
 
     for i in range(m):
@@ -74,7 +74,7 @@ def is_valid_graph(n, m, edges, bitmask):
     return True      
 ```
 **Complejidad Temporal:**
-Nos encontramos en presencia de un algoritmo recursivo que internamente llama el método de validación de la slución cada vez que alcanza la condición de parada. La complejidad de la recursividad resulta simple de determinar en este caso; notemos que se llamará a sí misma a lo sumo 2 veces y además se adentrará hasta que $arist$ alcance el valor de m. Por tanto, como $arist$ aumenta en 1 unidad con cada llamado podemos concluir que la complejidad de la recursividad, sin tener en cuenta los llamados al método de validación, será $O(2^m)$. Ahora, al considerar los llamados a $is\_valid\_graph$ vemos que la complejidad final será $O((m+2n)*2^m). Esto se debe a que el método anterior hace primero un recorrido por las $m$ aristas y luego dos ciclos por el array $degrees\_vertex$ con tamaño $n$. Finalmente la complejidad se puede reducir a solo $O(2^m)$, ya que se puede despreciar la parte polinomial.
+Nos encontramos en presencia de un algoritmo recursivo que internamente llama el método de validación de la slución cada vez que alcanza la condición de parada. La complejidad de la recursividad resulta simple de determinar en este caso; notemos que se llamará a sí misma a lo sumo 2 veces y además se adentrará hasta que $arist$ alcance el valor de m. Por tanto, como $arist$ aumenta en 1 unidad con cada llamado podemos concluir que la complejidad de la recursividad, sin tener en cuenta los llamados al método de validación, será $O(2^m)$. Ahora, al considerar los llamados a $is\_valid\_graph$ vemos que la complejidad final será $O((m+2n)*2^m)$. Esto se debe a que el método anterior hace primero un recorrido por las $m$ aristas y luego dos ciclos por el array $degrees\_vertex$ con tamaño $n$. Finalmente la complejidad se puede reducir a solo $O(2^m)$, ya que se puede despreciar la parte polinomial.
 
 ### **2.2) Solución Fuerza Bruta con Máscara de Bits:**
 Al igual que en el algoritmo anterior se desea iterar por cada posibilidad que nos otorga el remover o dejar una arista. Para luego, concluir si hay al menos una variante válida.
@@ -82,12 +82,12 @@ Al igual que en el algoritmo anterior se desea iterar por cada posibilidad que n
 **Idea general de solución:**
 
 El método $brute\_force\_bitmask$ iterará por las $2^m$ posibilidades que de manera intuitiva nos brinda el poder dejar o remover una arista del grafo. Lo anterior, lo hará usando como recurso máscaras de bits. El ciclo desde 1 a $2^m$ nos brinda la posibilidad de recorrer todos los números binarios con longitud $\leq$ m. Luego notemos que si elevamos $2^i$, con 0 $\leq$ i $\leq$ m, en binario estos números constituirán máscaras donde todos sus dígitos son 0 exceptuando la posición $i$.
-Entonces con estas herramientas y con el uso de la operación $Y Lógica(&)$ entre el número del ciclo exterior y las máscaras del ciclo interno, es que iremos ubicando $True$ o $False$ en la lista $bitmask$ que constituye la variación que se debe verificar.
+Entonces con estas herramientas y con el uso de la operación Y Lógica(&) entre el número del ciclo exterior y las máscaras del ciclo interno, es que iremos ubicando $True$ o $False$ en la lista $bitmask$ que constituye la variación que se debe verificar.
 Notar que se recorren todas las variaciones gracias a que como se explicó el ciclo externo estará constituido por todos los números desde 1 a hasta $2^m$, los cuales en binario son todas las variantes de ubicar 1s y 0s en $m$ casillas.
 
 **Pseudocódigo:**
 ```
-def brute_force_bitmask(n, m, edges):
+brute_force_bitmask(n, m, edges):
     bitmask = [True for i in range(m)]
     
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
@@ -100,7 +100,8 @@ def brute_force_bitmask(n, m, edges):
             return True
 
     return False
-def is_valid_graph(n, m, edges, bitmask):
+
+is_valid_graph(n, m, edges, bitmask):
     degree_vertex = [0 for i in range(n)]
 
     for i in range(m):
@@ -125,7 +126,8 @@ def is_valid_graph(n, m, edges, bitmask):
 **Complejidad Temporal:**
 La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iteraciones y dentro de cada una de estas iteraciones se lleva a cabo otro ciclo, este de longitud m, y un llamado a la función $is\_valid_graph$ de la cual ya conocemos su complejidad (véase complejidad de solución fuerza bruta con recursividad $O(2n+m)$). Por tanto, el algoritmo tiene como complejidad temporal $O((2n+2m)*2^m)$, la cual es equivalente a $O(2^m)$.
 
-### **2.3) Solución !!!!!Pendiente!!!!!!:**
+### **2.3) Solución utilizando metaheurística:**
+
 
 
 **Idea general de solución:** 
@@ -138,6 +140,55 @@ La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iter
 **Complejidad Temporal:**
 
 
+### **2.4) Demostración de la NP-completitud del problema:**
+
+**Nociones básicas**
+
+*Grafos Cúbicos:*
+
+*Problema NP-Completo:*
+
+**Teorema 2.4.1)** El problema de encontrar un subgrafo k-regular para un grafo $G$ es NP-completo para $k \geq 3$. (Problema k-R)
+
+**Demostración:** El problema planteado es NP, esto, dado que es posible en tiempo polinomial determinar si una solución referente a una instancia del mismo es correcta, es decir, para un subgrafo dado como respuesta, es posible determinar si el mismo cumple que todo nodo tiene grado $k$ simplemente recorriendo el conjunto de las aristas de este y aumentando en uno el grado de los nodos conectados en la misma.
+
+Es conocido que el problema de determinar si un grafo es 3-coloreable (problema 3-C) es NP-completo, ya que dicha condición fue demostrada por [Karp](https://link.springer.com/chapter/10.1007/978-1-4684-2001-2_9) en 1972. Luego, teniendo esto en cuenta, el objetivo será reducir el problema 3-C al problema k-R. Además, denotemos por $K_k'$ el grafo completo con $k$ vértices con una arista faltante.
+
+Dado un grafo arbritrario $G$ como entrada al problema 3-C, con $V(G) = \{v_1, v_2, \cdots, v_n\}$ y $E(G) = \{e_1, e_2, cdots, e_m\}$, podemos construir un nuevo grafo $G'$ de la siguiente manera:
+
+1. Para cada nodo $v_i$ en $G$, construyamos $3$ ciclos $C_i^1, C_i^2, C_i^3$ en $G'$, cada uno con longitud $2d(v_i) + 1$. Ahora, denotemos los vértices en $C_i^h$ como $c_{ij}^h$, con $1 \leq i \leq n, 1 \leq j \leq 2d(v_i) + 1$ y $1 \leq h \leq 3$.
+
+2. Para cada arista $e_j$, con $1 \leq j \leq m$, construyamos $3(k-2)$ subgrafos correspondientes denotados como $D_{jp}^h$ en $G'$, con $1 \leq p \leq k-1, 1 \leq h \leq 3$, donde cada $D_{jp}^h$ es un grafo $K_{k+1}'$. Además, denotemos los dos vértices con grado $k-1$ en $D_{jp}^h$ como $x_{jp}^h$ e $y_{jp}^h$.
+
+3. Sea la arista $e_j$ incidente sobre los vértices $v_s$ y $v_t$ en $G$. Para cada $h$, $1 \leq h \leq 3$, sean $c_{s\alpha}^h$ y $c_{s\beta}^h$ ($c_{t\gamma}^h$ y $c_{t\delta}$) dos vértices en $C_s^h$ ($C_t^h$) tales que $c_{s\alpha}^h$ y $c_{s\beta}^h$ ($c_{t\gamma}^h$ y $c_{t\delta}$) tengan grado dos. Para $1 \leq p \leq 3(k-2)$, agreguemos las aristas $(c_{s\alpha}^h, x_{jp}^h), (c_{s\beta}^h, y_{jp}^h), (c_{t\gamma}^h, x_{jp}^h)$ y $(c_{t\delta}^h, y_{jp}^h)$ al conjunto de aristas $E(G')$.
+Una vez que todas las aristas en $G$ hayan sido consideradas en el paso $3.$, cada cilco $C_i^h$ ($1 \leq i \leq n, 1 \leq h \leq 3$) contendrá exactamente un vértice de grado dos. Nombremos estos vértices como $w_i^h$, con $1 \leq i \leq n, 1 \leq h \leq 3$.
+
+4. Para $1 \leq i \leq n$, sea $U_i$ un subgrafo formado como: $U_i$ contiene $(k-2)$ veces el grafo K_{k+1}' y $(k-2)$ otros vértices. Denotemos estos otros vértices como $u_{ij}$, y los vértices en $K_{k+1}'$ con grado $k-1$, $x_{ij}$ e $y_{ij}$ con $1 \leq j \leq k-2$. Luego, unamos los vértices $u_{ij}$ con los grafos $K_{k+1}'$ añadiendo las aristas $(u_{ij}, x_{ij})$. Luego, añadimos los subgrafos $U_1, U_2, \cdots, U_n$ y las aristas $(u_{ij}, w_i^1), (y_{ij}, w_i^2)$ y $(y_{ij}, w_i^3)$  a $G'$. Esto lo hacemos para cada $i$ y $j$, con $1 \leq i \leq n, 1 \leq j \leq k-2$.
+
+5. Finalmente, añadimos un ciclo $C'$ de longitud $(k-1)n$ a $G´$; este ciclo es sobre los nuevos vértices $a_{11}, a_{12}, \cdots, a_{1n}, a_{21}, \cdots, a_{(k-1)n}$. Para $1 \leq i \leq n, 1 \leq j \leq k-2$ y $1 \leq p \leq k-1$, añadimos las aristas $(a_{pi}, u_{ij})$ a $G'$.
+
+Es evidente que la construcción del grafo $G'$ puede ser realizada en tiempo polinomial para cualquier grafo $G$ dado. Ahora, la demostración principal del teorema consiste en probar que: *Un grafo $G$ es 3-coloreable si y solo si el grafo $G'$ construido contiene un subgrafo k-regular.*
+
+($\Rightarrow$) Dado el grafo $G$ y cualquier tripartición de $V(G)$ en subconjuntos $V_1, V_2$ y $V_3$, podemos construir un subgrafo de $G'$, al cual denotaremos por $H$, de la siguiente manera:
+
+1. Todos los vértices $a_{ij}$, $1 \leq i \leq k-1, 1 \leq j \leq n$ están en $V(H)$.
+2. Todos los vértices $u_{ij}$, $1 \leq i \leq n, 1 \leq j \leq k-2$ están en $V(H)$.
+3. Si $v_i$ de $G$ está en el subconjunto $V_c$, $1 \leq c \leq 3$, entonces el ciclo $C_i^c$ está en $H$. Si el subconjunto $V_c$ no está en $V_1$, entonces se añaden también los vértices en los $k-2$ grafos $K_{k+1}'$ de $U_i$.
+
+4. Si la arista $e_j$, $1 \leq j \leq m$, es adjacente al vértice $v_s$ el cual está en el subconjunto $V_c$, entonces los subgrafos $D_{jp}^c$ adyacentes a $C_s^c$ están en $V(H)$ para $1 \leq p \leq k-2$.
+5. El subgrafo $H$ se define como $G'[V(H)]$.
+
+Es trivial comprobar que el subgrafo $H$ contruido existe para cualquier tripartición de $G$. Además, todos los vértices en $H$ tienen grado $k$ excepto posiblemente dichos vértices $x_{jp}^c$ e $y_{jp}^c$ en $D_{jp}^c$ para $1 \leq j \leq m, 1 \leq p \leq k-2$ y $1 \leq c \leq 3$. Por lo tanto, es fácil notar que si la tripartición es una coloración, por ejemplo, $G$ es 3-coloreable, entonces el subgrafo $H$ construido es k-regular.
+
+($\Leftarrow$) Asumamos que $G'$ contiene un subgrafo k-regular $H$, las siguientes propiedades son verdad respecto a $H$:
+
+1. Todos los vértices $a_{ij}$ y $u_{jl}$, $1 \leq i \leq k-1, 1 \leq j \leq n$ y $1 \leq l \leq k-2$ están en $V(H)$. Esto es debido a que el subgrafo $H$ no puede ser k-regular sin la inclusión de un vértice $u_{jl}$, pero la inclusión de uno de dichos vértices obliga a que todos los vértices en $C'$ y otros vértices $u_{jl}$ sean incluidos.
+2. Para cada $i$, $1 \leq i \leq n$, exactamente uno del ciclo $C_i^h$, $1 \leq h \leq 3$, está en $V(H)$.
+3. Para cada $i$, $1 \leq i \leq n$, si $C_i^h \subseteq H$, entonces $C_j^h \not\subseteq H$ para todo $j$ tal que $(i, j) \in E(G)$. Esto asegura que todos los vértices $x_{jp}^h$ e $y_{jp}^h$, $1 \leq j \leq m$, $1 \leq p \leq k-2, 1 \leq h \leq 3$, tienen grado $3$.
+
+Por la propiedad $2.$, se llega a que el subgrafo $H$ de $G'$ corresponde a una tripartición para los vértices de $G$ tal que un vértice $v_i$ está en una partición $c$ si el ciclo $C_i^c \in H$. La propiedad $3.$ asegura que los vértices adyacentes están en una partición diferente, por lo tanto, esto muestra que la tripartición correspondiente a $H$ es de hecho una coloración de $G$. Por lo tanto, $G$ es 3-coloreable si $G'$ contiene un subgrafo k-regular $H$. De esta forma se completa la demostración.□
+
+Una vez demostrado el teorema anterior, vemos que demostramos también que el problema enfrentado en este proyecto es $NP-completo$, esto dado que si lo reducimos para $k=3$, se cumple por el teorema anterior. Luego, dado ese subgrafo 3-regular que se asegura para un grafo arbitrario en caso de que lo tenga, bastaría con quitar las aristas necesarias para llegar a él como parte de la solución de la situación planteada, donde estará un subgrafo regular y posiblemente, otros nodos con grado $0$, lo cual corresponde con la validez de una solución buscada.
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
 
@@ -145,15 +196,23 @@ Para ejecutar el proyecto sólo es necesario ejecutar el archivo $main.py$ el cu
 A continuación se muestra un ejemplo de flujo de entrada y salida por consola:
 ```
 Input:
+6 7
+0 1
+0 2
+0 3
+1 2
+1 3
+2 3
+0 4
 ```
 ```
 Output:
-
+True
 ```
 
 - **Soluciones:**
-
+En esta carpeta se encuentran las distintas soluciones probadas para resolver el problema planteado. Todas contienen en esencia un método principal que recibe una entrada en el formato $n, m, edges$ donde $n$ y $m$ son la cantidad de nodos y aristas del grafo respectivamente y $edges$ el es conjunto de aristas. Como salida de estos métodos se da un valor booleano que representa la respuesta a la interrogante de si es posible, con el uso o no de la operación de quitar aristas del grafo original dado (no todas a la vez), el grafo resultante cumpla que cada nodo tiene grado $3$ o $0$.
 
 - **Informe:** Constituye el resumen de los experimentos llevados a cabo en el proyecto y contiene las demostraciones que prueban la correctitud de los mismos.
 
-- **Pruebas:** Contiene el script [algos_output_tester.py](), el cual genera casos de prueba aleatorios y compara las salidas de las soluciones implementadas y comprueba la igualdad en la salida de estas para mostrar su equivalencia. También se incluyó el archivo [tester.py]() que contiene la función *test_solution(...)* que recibe de entrada una función que resuelve el problema y se desea evaluar y luego se comparan las respuestas de esta con las del método de solución *!!!!!!!!!!!!!!!!!!rellenar!!!!!!!!!!!!!!!!* y finalmente se da como retorno "Accepted!!" si coincidieron todas las respuestas y "Wrong Answer!!" en caso contrario. 
+- **Pruebas:** Contiene el script [algos_output_tester.py](), el cual genera casos de prueba aleatorios y compara las salidas de las soluciones implementadas y comprueba la igualdad en la salida de estas para mostrar su equivalencia. También se incluyó el archivo [tester.py]() que contiene la función *test_solution(...)* que recibe de entrada una función que resuelve el problema y se desea evaluar y luego se comparan las respuestas de esta con las del método de solución $brute\_force\_recursive$ y finalmente se da como retorno "Accepted!!" si coincidieron todas las respuestas y "Wrong Answer!!" en caso contrario. 
