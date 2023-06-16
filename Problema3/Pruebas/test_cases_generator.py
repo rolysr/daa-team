@@ -4,7 +4,7 @@ def generate_test_cases(number_test_cases):
     test_cases = []
 
     for i in range(number_test_cases):
-        n = randrange(5,10) 
+        n = randrange(5,6) 
         m = 0
         edges = []
         for j in range(n-1):

@@ -124,11 +124,10 @@ is_valid_graph(n, m, edges, bitmask):
 ```
 
 **Complejidad Temporal:**
-La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iteraciones y dentro de cada una de estas iteraciones se lleva a cabo otro ciclo, este de longitud m, y un llamado a la función $is\_valid_graph$ de la cual ya conocemos su complejidad (véase complejidad de solución fuerza bruta con recursividad $O(2n+m)$). Por tanto, el algoritmo tiene como complejidad temporal $O((2n+2m)*2^m)$, la cual es equivalente a $O(2^m)$.
+La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iteraciones y dentro de cada una de estas iteraciones se lleva a cabo otro ciclo, este de longitud m, y un llamado a la función $is\_valid\_graph$ de la cual ya conocemos su complejidad (véase complejidad de solución fuerza bruta con recursividad $O(2n+m)$). Por tanto, el algoritmo tiene como complejidad temporal $O((2n+2m)*2^m)$, la cual es equivalente a $O(2^m)$.
 
 ### **2.3) Solución utilizando metaheurística:**
-
-
+Una vez analizadas las soluciones anteriores, es posible notar una interesante aproximación en base a la distancia de soluciones parciales con respecto a una solución admisible para el problema en cuestión.
 
 **Idea general de solución:** 
 
@@ -142,11 +141,33 @@ La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iter
 
 ### **2.4) Demostración de la NP-completitud del problema:**
 
-**Nociones básicas**
+**Nociones básicas:**
+
+En teoría de la complejidad computacional, la clase de complejidad NP-completo es el subconjunto de los problemas de decisión en NP tal que todo problema en NP se puede reducir en cada uno de los problemas de NP-completo. Se puede decir que los problemas de NP-completo son los problemas más difíciles de NP y muy probablemente no formen parte de la clase de complejidad P. La razón es que de tenerse una solución polinómica para un problema NP-completo, todos los problemas de NP tendrían también una solución en tiempo polinómico. Si se demostrase que un problema NP-completo, llamémoslo A, no se pudiese resolver en tiempo polinómico, el resto de los problemas NP-completos tampoco se podrían resolver en tiempo polinómico. Esto se debe a que si uno de los problemas NP-completos distintos de A, digamos X, se pudiese resolver en tiempo polinómico, entonces A se podría resolver en tiempo polinómico, por definición de NP-completo. Ahora, pueden existir problemas en NP y que no sean NP-completos para los cuales exista solución polinómica, aun no existiendo solución para A.
+
+Por ejemplo para el caso específico de nuestro problema, dado un grafo $G$, si se tiene un subgrafo del mismo, es fácil corroborar que este cumple con las condiciones establecidas en el problema.
 
 *Grafos Cúbicos:*
 
+El problema en particular que tratamos puede ser reducido al hecho de encontrar un subgrafo regular de grado $3$ de un grafo arbitrario dado como entrada. Vemos que esto es equivalente a lo que se pide en nuestro problema pues si encontramos tal subgrafo, este tendría una cantidad de aristas menor o igual a la del grafo inicial, con lo cual se pudiese inferir que el proceso de quitar aristas hasta que todo nodo cumpla que, o tiene grado $3$ o tiene grado $0$. Dichos subgrafos son conocidos como grafos cúbicos.
+
+En teoría de grafos, un grafo cúbico o grafo trivalente es un grafo cuyos vértices son todos incidentes a exactamente tres aristas. En otras palabras, un grafo cúbico es un grafo 3-regular.
+
 *Problema NP-Completo:*
+
+Nuestro problema es un problema de desición, ya que su respuesta se basa en afirmar o negar una sentencia, en este caso, si para un grafo dado, existe una reducción de aristas, de no todas a la vez, tal que el grafo resultante cumpla que cada nodo tiene grado 3 o 0. Ahora, un problema de decisión C es NP-completo si:
+
+1. C es un problema NP
+2. Todo problema de NP se puede transformar polinómicamente en C.
+
+Se puede demostrar que C es NP demostrando que un candidato a solución de C puede ser verificado en tiempo polinómico.
+
+Una transformación polinómica de L en C es un algoritmo determinista que transforma instancias de l ∈ L en instancias de c ∈ C, tales que la respuesta a c es positiva si y sólo si la respuesta a l lo es.
+
+Como consecuencia de esta definición, de tenerse un algoritmo en P para C, se tendría una solución en P para todos los problemas de NP.
+
+Es entonces en base a dichas ideas, que probaremos la NP-completitud de nuestro problema a partir de la demostración del siguiente teorema:
+
 
 **Teorema 2.4.1)** El problema de encontrar un subgrafo k-regular para un grafo $G$ es NP-completo para $k \geq 3$. (Problema k-R)
 
