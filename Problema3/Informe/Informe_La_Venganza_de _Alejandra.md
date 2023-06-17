@@ -200,8 +200,186 @@ get_state_quality(n, m, edges, bitmask):
 **Complejidad Temporal:**
 Primeramente, el método $get\_state\_quality$ se ejecuta en $O(n + m)$, pues se recorre el conjunto bitmask que denota la desición de quitar o no una arista entre las $m$ posibles y luego se recorren los grados correspondientes a los $n$ nodos del grafo. Por otro lado, el método $get\_sorted\_indexes\_by\_quality$ tiene complejidad $O(m*(n + m) + m\log{m})$, ya que por cada posible índice válido obtenido del método $get\_valid\_indexes$, se obtiene en $O(m)$ ya que analiza aquellos índices de las aristas que pueden eliminarse y por cada uno de dichos índices se procede a calcular la calidad del estado en el cual estos dejan al grafo después de eliminar la arista correspondiente y luego se realiza una ordenación entre dichos índices, donde el peor caso es cuando se pueden eliminar cualquiera de las aristas del grafo. Finalmente, se obtiene un algoritmo de a lo sumo $O(m*(m*(n + m) + m\log{m}))$, ya que en cada momento se analiza de las aristas posibles cuál quitar y en el peor caso, sería necesario llegar a la situación inválida donde se intentan quitar todas.
 
+### **2.4) Solución utilizando genetic algorithm:**
+Siguiendo la misma línea de pensamiento de la solución anterior, ahora también deseamos desplazarnos a través de aproximaciones a lo que sabemos es el óptimo de nuestro problema.
 
-### **2.4) Demostración de la NP-completitud del problema:**
+**Idea general de solución:** 
+La idea de este algoritmo es generar una población acotada y constante (50 si hay menos de 10 aristas y 200 si hay más) de posibles soluciones para nuestro problema gracias a $random\_solutions$. Para luego analizarlas según el grado de los nodos que resulten de los subgrafos generados por dichas soluciones. Esto lo hace el método $make\_calculations$, este basado en el siguiente criterior de penalización siguiente:
+1. No penalizará si el nodo ya tiene grado 0 ó 3.
+2. Penalizará con 1 a los nodos con grado 1 y 2.
+3. Calculará la diferencia entre 3 y los nodos con grado mayor que 3 y esta será su penalización.
+4. Si nos encontramos en el caso indeseado, que todos los nodos tienen grado 0, procede a penalizar con la cantidad de aristas del grafo inicial. Esto, con el objetivo que ignore lo mayormente posible este caso.
+sumará la penalización total y se la asociará a la solución.
+Luego de manera glotosa nos quedaremos con las $\log_2{m}$ menos penalizadas. Si hablamos de $iterative\_genetic$ la solución final de la iteración anterior será agregada a las $\log_2{m}$ soluciones escogidas. Finalmente, para la solución final se determina cuál fue la desición más común entre la muestra final de soluciones con respecto a cada arista. Por tanto, la arista $i$ se decide remover si más del 50% de las soluciones decidieron removerla, de igual manera para si se desea dejar. Podemos notar gracias a imágenes y resultados obtenidos, que aunque en algunos casos puede llegar a mostrar mejoras en cada iteración no es fiable, no determina la solución óptima y no hace tender a 0 la función de penalización en todos los casos. Podemos notar también que el factor aleatorio de generar la población inicial juega un importante papel porque en ejecuciones de casos distintos, relacionados o no, se obtienen resultados impredecibles.
+
+**Pseudocódigo:**
+```
+from random import randrange
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+
+def generate_test_cases(number_test_cases):
+    test_cases = []
+
+    for i in range(number_test_cases):
+        n = randrange(6,7) 
+        m = 0
+        edges = []
+        for j in range(n-1):
+            for k in range(j, n):
+                if j != k and randrange(0, 2):
+                    edge = (j, k)
+                    edges.append(edge)
+                    m += 1
+        test_cases.append((n, m, edges))
+    return test_cases
+
+def genetic_algorithm(graph,iterative_solution):
+    m=graph[1]
+    n=graph[0]
+    edges=graph[2]
+    solutions=random_solutions(m)
+    dict_penalties={}
+
+    for i in range(len(solutions)):
+        degrees=get_degrees(n,solutions[i],edges)
+        penalty=make_calculation(degrees,m)
+        if dict_penalties.get(penalty) == None:
+            dict_penalties[penalty]=[solutions[i]]
+        else:
+            dict_penalties[penalty].append(solutions[i])
+
+
+    ordered_penalties = sorted(dict_penalties)
+    new_solutions=[]
+    if iterative_solution != []:
+        new_solutions.append(iterative_solution)
+            
+    i=0
+    while len(new_solutions)<= int(math.log2(m)):
+        for j in dict_penalties[ordered_penalties[i]]:
+            new_solutions.append(j)
+        i+=1
+    new_solutions= [new_solutions[i] for i in range(int(math.log2(m)))]
+    
+    final_solution=compare_solutions(new_solutions)
+    final_penalty=make_calculation(get_degrees(n,final_solution,edges),m)
+   
+    return final_solution,final_penalty 
+
+def compare_solutions(solutions):
+    final_solution=[]
+    trues=0
+    falses=0
+    for i in range(len(solutions[0])):
+        for j in range(len(solutions)):
+            if solutions[j][i]:
+                trues+=1
+            else:
+                falses+=1
+        if trues>=falses:
+            final_solution.append(True) 
+        else:
+            final_solution.append(False)  
+        trues=0
+        falses=0    
+    return final_solution
+
+def get_degrees(n,bitmask,edges):
+    degree_vertex = [0 for i in range(n)]
+
+    for i in range(len(edges)):
+        if bitmask[i]:
+            a, b = edges[i]
+            degree_vertex[a] += 1
+            degree_vertex[b] += 1
+    return degree_vertex
+
+def random_solutions(m):
+    if m<6:
+        raise Exception("Imposible graph, it should have more than 6 arist at least")
+    if m<10:
+        number_solutions= 50
+    else:
+        number_solutions=200
+    solutions=[]
+    while len(solutions) !=number_solutions:
+        posible_solution=generate_solution(m)
+        if differents_solutions(posible_solution,solutions):
+            solutions.append(posible_solution)
+    return solutions
+
+def differents_solutions(posible_solution,solutions):
+    if len(solutions)==0:
+        return True
+    for i in solutions:
+        if i==posible_solution:
+            return False
+    return True    
+
+def generate_solution(m):
+    solution=[]
+    for i in range(m):
+        r=randrange(0,2)
+        if r==1:
+            solution.append(True)
+        else:
+            solution.append(False)
+    return solution
+
+def difference_cost(x):
+    if x == 0 or x == 3:
+        return 0
+    elif x == 1 or x == 2:
+        return 1
+    else:
+        return x - 3
+
+def make_calculation(degrees,m):
+    if sum(degrees)==0:
+        return m
+
+    fit = 0
+    for i in degrees:
+        fit += difference_cost(i)
+    return fit
+
+
+def genetic_same_graph_different_population():
+    graph = generate_test_cases(1)[0]
+    degrees = get_degrees(graph[0],[True for i in range(graph[1])],graph[2])
+    initial_penalty = make_calculation(degrees,graph[1])
+
+    results=[]
+    results.append(initial_penalty)
+    x=[1,2,3,4,5,6,7,8,9,10,11]
+
+    for i in range(10):
+        final_solution,final_penalty=genetic_algorithm(graph,[])
+        results.append(final_penalty)
+
+    plt.plot(x,results,"o")
+    plt.show()
+    
+def iterative_genetic():
+    graph = generate_test_cases(1)[0]
+    results=[]
+    final_solution=[]
+    x=[i for i in range(30)]
+
+    for i in range(30):
+        final_solution,final_penalty=genetic_algorithm(graph,final_solution)
+        results.append(final_penalty)
+
+    plt.plot(x,results,"o")
+    plt.show()
+```
+
+**Complejidad Temporal:**
+Primeramente, en el método $random\_solutions$ notemos que es generada una muestra entera y fija de soluciones. Estas son iteradas en  $genetic\_algorithm$, mientras se llama a  $get\_degrees$ y  $make\_calculations$. El primero antes mencionado realiza un labor antes exxplicada iterando por cada arista para calcular el grado de cada nodo, por tanto posee una complejidad $O(m)$. El segundo iterapor cada degree por tanto su complejidad es $O(n)$ ya que esta lista estará conformada por los grados de todos los nodos. El proceso de escoger las $\log_2{m}$ """mejores soluciones""" será $O(\log_2{m})$, porque son agregadas de 1 en 1. Por último el método $compare\_solutions$ que itera por la longitud de las soluciones a la vez que por la cantidad de soluciones, esto resulta en una complejidad de $O(m*\log_2{m})$. Finalmente se hace un llamado a $make\_calculations$, para así obtener una complejidad temporal final igual a $O(m+n+\log_2{m}+m*\log_2{m})$. Lo anterior puede ser traducido a sólo $O(n+m*\log_2{m}) dónde dependiedno de la cantidad de nodos y de aristas uno de los dos miembros toma más importancia.
+
+### **2.5) Demostración de la NP-completitud del problema:**
 
 **Nociones básicas:**
 
@@ -231,7 +409,7 @@ Como consecuencia de esta definición, de tenerse un algoritmo en P para C, se t
 Es entonces en base a dichas ideas, que probaremos la NP-completitud de nuestro problema a partir de la demostración del siguiente teorema:
 
 
-**Teorema 2.4.1)** El problema de encontrar un subgrafo k-regular para un grafo $G$ es NP-completo para $k \geq 3$. (Problema k-R)
+**Teorema 2.5.1)** El problema de encontrar un subgrafo k-regular para un grafo $G$ es NP-completo para $k \geq 3$. (Problema k-R)
 
 **Demostración:** El problema planteado es NP, esto, dado que es posible en tiempo polinomial determinar si una solución referente a una instancia del mismo es correcta, es decir, para un subgrafo dado como respuesta, es posible determinar si el mismo cumple que todo nodo tiene grado $k$ simplemente recorriendo el conjunto de las aristas de este y aumentando en uno el grado de los nodos conectados en la misma.
 
