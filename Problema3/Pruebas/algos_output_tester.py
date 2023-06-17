@@ -8,5 +8,4 @@ def check_results():
     for test_case in test_cases:
         result1 = brute_force_bitmask(*test_case)
         result2 = brute_force_recursive(*test_case)
-        result3 = metaheuristic_solution(*test_case)
-        print(result1, result2, result3)
+        print(result1, result2)

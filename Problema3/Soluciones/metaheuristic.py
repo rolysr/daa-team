@@ -4,7 +4,7 @@ from Soluciones.brute_force import is_valid_graph
 def metaheuristic_solution(n, m, edges):
     bitmask = [True for i in range(m)]
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
-        return True
+        return n
     else:
         return metaheuristic_solve(n, m, edges, bitmask)
 
@@ -17,13 +17,9 @@ def metaheuristic_solve(n, m, edges, bitmask):
     
     valid_edge_indexes = get_valid_indexes(bitmask)
     sorted_indexes_by_quality = get_sorted_indexes_by_quality(valid_edge_indexes, n, m, edges, bitmask)
-    for value in sorted_indexes_by_quality:
-        _, index = value
-        bitmask[index] = False
-        if metaheuristic_solve(n, m, edges, bitmask):
-            return True
-        bitmask[index] = True
-    return False
+    _, index = sorted_indexes_by_quality[0]
+    bitmask[index] = False
+    return metaheuristic_solve(n, m, edges, bitmask)
 
 def get_valid_indexes(bitmask):
     indexes = []

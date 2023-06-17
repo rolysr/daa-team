@@ -74,7 +74,7 @@ is_valid_graph(n, m, edges, bitmask):
     return True      
 ```
 **Complejidad Temporal:**
-Nos encontramos en presencia de un algoritmo recursivo que internamente llama el método de validación de la slución cada vez que alcanza la condición de parada. La complejidad de la recursividad resulta simple de determinar en este caso; notemos que se llamará a sí misma a lo sumo 2 veces y además se adentrará hasta que $arist$ alcance el valor de m. Por tanto, como $arist$ aumenta en 1 unidad con cada llamado podemos concluir que la complejidad de la recursividad, sin tener en cuenta los llamados al método de validación, será $O(2^m)$. Ahora, al considerar los llamados a $is\_valid\_graph$ vemos que la complejidad final será $O((m+2n)*2^m)$. Esto se debe a que el método anterior hace primero un recorrido por las $m$ aristas y luego dos ciclos por el array $degrees\_vertex$ con tamaño $n$. Finalmente la complejidad se puede reducir a solo $O(2^m)$, ya que se puede despreciar la parte polinomial.
+Nos encontramos en presencia de un algoritmo recursivo que internamente llama el método de validación de la solución cada vez que alcanza la condición de parada. La complejidad de la recursividad resulta simple de determinar en este caso; notemos que se llamará a sí misma a lo sumo 2 veces y además se adentrará hasta que $arist$ alcance el valor de m. Por tanto, como $arist$ aumenta en 1 unidad con cada llamado podemos concluir que la complejidad de la recursividad, sin tener en cuenta los llamados al método de validación, será $O(2^m)$. Ahora, al considerar los llamados a $is\_valid\_graph$ vemos que la complejidad final será $O((m+2n)*2^m)$. Esto se debe a que el método anterior hace primero un recorrido por las $m$ aristas y luego dos ciclos por el array $degrees\_vertex$ con tamaño $n$. Finalmente la complejidad se puede reducir a solo $O(2^m)$, ya que se puede despreciar la parte polinomial.
 
 ### **2.2) Solución Fuerza Bruta con Máscara de Bits:**
 Al igual que en el algoritmo anterior se desea iterar por cada posibilidad que nos otorga el remover o dejar una arista. Para luego, concluir si hay al menos una variante válida.
@@ -124,19 +124,81 @@ is_valid_graph(n, m, edges, bitmask):
 ```
 
 **Complejidad Temporal:**
-La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iteraciones y dentro de cada una de estas iteraciones se lleva a cabo otro ciclo, este de longitud m, y un llamado a la función $is\_valid\_graph$ de la cual ya conocemos su complejidad (véase complejidad de solución fuerza bruta con recursividad $O(2n+m)$). Por tanto, el algoritmo tiene como complejidad temporal $O((2n+2m)*2^m)$, la cual es equivalente a $O(2^m)$.
+La complejidad temporal de este algoritmo viene dada por el ciclo con $2^m$ iteraciones y dentro de cada una de estas iteraciones se lleva a cabo otro ciclo, este de longitud m, y un llamado a la función $is\_valid\_graph$ de la cual ya conocemos su complejidad (véase complejidad de solución fuerza bruta con recursividad $O(2n+m)$). Por tanto, el algoritmo tiene como complejidad temporal $O((2n+2m)*2^m)$.
 
 ### **2.3) Solución utilizando metaheurística:**
-Una vez analizadas las soluciones anteriores, es posible notar una interesante aproximación en base a la distancia de soluciones parciales con respecto a una solución admisible para el problema en cuestión.
+Una vez analizadas las soluciones anteriores, es posible notar una interesante aproximación en base a la distancia de soluciones parciales con respecto a una solución admisible para el problema en cuestión. En este caso, ideamos una aproximación polinomial donde en cada caso se seleccione como arista a eliminar, aquella que genere la mayor cantidad posible de nodos en un estado final correcto, es decir, el número de nodos tal que tengan grado 3 o 0. Evidentemente, conociendo el valor óptimo para dicho problema, podemos determinar la posibilidad o no de lograr el objetivo deseado, esto ya que si el óptimo es igual al número de nodos del grafo, entonces el resultado al problema de desición es verdadero, mientras que en otro caso, es falso.
 
 **Idea general de solución:** 
+La idea de esta metaheurística es en todo momento seleccionar lo que definiremos como mejor arista a eliminar: Una arista es tan buena como candidata a eliminar como de cerca esté el estado en que queda el grafo al ser eliminada. En este caso, la calidad de un estado del grafo es la cantidad de nodos que estén en el estado deseado.
 
+Es posible notar que con esta aproximación que quitando una arista, el estado nuevo en el que se coloca el grafo puede: 
+- Disminuir en 2, en caso de que se quite de dos nodos con grado 3.
+- Mantenerse igual, en caso de que los dos nodos conectados hayan estado previamente con grado mayor estricto a 4.
+- Aumentar en 1, en los casos en que se quite una arista entre un nodo con grado mayor que 4 y uno con grado igual a 1 o igual a 4.
+- Aumentar en dos en caso de que se desconecte la arista entre dos nodos de grado 1, o cuando estos dos tengan grado 4.
+Por lo tanto, la mejora de quitar una arista será a lo sumo de 2 unidades respecto al estado anterior.
+
+Luego el procedimiento realizado consiste en seleccionar alguna arista cuya calidad sea lo mayor posible, en este caso se tomó como desición tomar la primera de estas, aunque tambíen se puede experimentar equivalentemente seleccionando una aleatoriamente del conjunto de las mejores en cuanto a calidad.
+
+Dado que se realiza un algoritmo con un resultado aproximado a al problema de desición en cuestión, es necesario notar que este es un proceso de optimización golosa, donde en cada momento se selecciona la arista candidata de mejor calidad sin verificar otras posibilidades. Por lo tanto la respuesta del algoritmo es un entero entre 0 y $n$, denotando el número máximo alcanzado de nodos que finalizaron en un estado deseado después de haber realizado las eliminaciones de aristas con el criterio anterior.
 
 **Pseudocódigo:**
 ```
+metaheuristic_solution(n, m, edges):
+    bitmask = [True for i in range(m)]
+    if m == 0 or is_valid_graph(n, m, edges, bitmask):
+        return n
+    else:
+        return metaheuristic_solve(n, m, edges, bitmask)
+
+metaheuristic_solve(n, m, edges, bitmask):
+    if bitmask == [False for i in range(m)]:
+        return False
+    
+    if is_valid_graph(n, m, edges, bitmask):
+        return True
+    
+    valid_edge_indexes = get_valid_indexes(bitmask)
+    sorted_indexes_by_quality = get_sorted_indexes_by_quality(valid_edge_indexes, n, m, edges, bitmask)
+    _, index = sorted_indexes_by_quality[0]
+    bitmask[index] = False
+    return metaheuristic_solve(n, m, edges, bitmask)
+
+get_valid_indexes(bitmask):
+    indexes = []
+    for i in range(len(bitmask)):
+        if bitmask[i]:
+            indexes.append(i)
+    return indexes
+
+get_sorted_indexes_by_quality(valid_edge_indexes, n, m, edges, bitmask):
+    answer = []
+    for index in valid_edge_indexes:
+        bitmask[index] = False
+        quality = get_state_quality(n, m, edges, bitmask)
+        answer.append((quality, index))
+        bitmask[index] = True
+    answer.sort()
+    return answer
+
+get_state_quality(n, m, edges, bitmask):
+    number_valid_nodes = 0
+    degree_vertex = [0 for i in range(n)]
+
+    for i in range(m):
+        if bitmask[i]:
+            a, b = edges[i]
+            degree_vertex[a] += 1
+            degree_vertex[b] += 1
+    for d in degree_vertex:
+        if d == 3 or d == 0:
+            number_valid_nodes += 1
+    return number_valid_nodes
 ```
 
 **Complejidad Temporal:**
+Primeramente, el método $get\_state\_quality$ se ejecuta en $O(n + m)$, pues se recorre el conjunto bitmask que denota la desición de quitar o no una arista entre las $m$ posibles y luego se recorren los grados correspondientes a los $n$ nodos del grafo. Por otro lado, el método $get\_sorted\_indexes\_by\_quality$ tiene complejidad $O(m*(n + m) + m\log{m})$, ya que por cada posible índice válido obtenido del método $get\_valid\_indexes$, se obtiene en $O(m)$ ya que analiza aquellos índices de las aristas que pueden eliminarse y por cada uno de dichos índices se procede a calcular la calidad del estado en el cual estos dejan al grafo después de eliminar la arista correspondiente y luego se realiza una ordenación entre dichos índices, donde el peor caso es cuando se pueden eliminar cualquiera de las aristas del grafo. Finalmente, se obtiene un algoritmo de a lo sumo $O(m*(m*(n + m) + m\log{m}))$, ya que en cada momento se analiza de las aristas posibles cuál quitar y en el peor caso, sería necesario llegar a la situación inválida donde se intentan quitar todas.
 
 
 ### **2.4) Demostración de la NP-completitud del problema:**
