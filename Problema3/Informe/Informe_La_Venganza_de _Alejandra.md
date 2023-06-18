@@ -491,7 +491,7 @@ is_node_degree_3(n, m, edges):
 ```
 
 **Complejidad Temporal:**
-La complejidad temporal de la función $is\_node\_degree\_3$ es $O(n + m)$, ya que recorre todas las arista donde va actualizando un array de tamaño $n$ donde calcula para cada nodo del grafo su grado, y retorna True si existe alguna con grado mayor o igual a 3 y False en caso contrario, Luego, la función $approx\_solution$ llama a la anterior en una sola instrucción que tiene como costo la ejecución de dicha primera función, por lo cual la aproximación tiene como complejidad temporal temporal $O(n + m)$.
+La complejidad temporal de la función $is\_node\_degree\_3$ es $O(n + m)$, ya que recorre todas las arista donde va actualizando un array de tamaño $n$ donde calcula para cada nodo del grafo su grado, y retorna True si existe alguno con grado mayor o igual a 3 y False en caso contrario, Luego, la función $approx\_solution$ llama a la anterior en una sola instrucción que tiene como costo la ejecución de dicha primera función, por lo cual la aproximación tiene como complejidad temporal $O(n + m)$.
 
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
