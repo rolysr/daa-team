@@ -150,20 +150,24 @@ metaheuristic_solution(n, m, edges):
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
         return n
     else:
-        return metaheuristic_solve(n, m, edges, bitmask)
+        maximum = [0]
+        metaheuristic_solve(n, m, edges, bitmask, maximum)
+        return maximum[0]
 
-metaheuristic_solve(n, m, edges, bitmask):
+metaheuristic_solve(n, m, edges, bitmask, maximum):
     if bitmask == [False for i in range(m)]:
-        return False
+        return
     
     if is_valid_graph(n, m, edges, bitmask):
-        return True
+        maximum = [n]
+        return
     
     valid_edge_indexes = get_valid_indexes(bitmask)
     sorted_indexes_by_quality = get_sorted_indexes_by_quality(valid_edge_indexes, n, m, edges, bitmask)
     _, index = sorted_indexes_by_quality[0]
     bitmask[index] = False
-    return metaheuristic_solve(n, m, edges, bitmask)
+    maximum[0] = max(maximum[0], get_state_quality(n, m, edges, bitmask))
+    return metaheuristic_solve(n, m, edges, bitmask, maximum)
 
 get_valid_indexes(bitmask):
     indexes = []
@@ -211,6 +215,12 @@ La idea de este algoritmo es generar una población acotada y constante (50 si h
 4. Si nos encontramos en el caso indeseado, que todos los nodos tienen grado 0, procede a penalizar con la cantidad de aristas del grafo inicial. Esto, con el objetivo que ignore lo mayormente posible este caso.
 sumará la penalización total y se la asociará a la solución.
 Luego de manera glotosa nos quedaremos con las $\log_2{m}$ menos penalizadas. Si hablamos de $iterative\_genetic$ la solución final de la iteración anterior será agregada a las $\log_2{m}$ soluciones escogidas. Finalmente, para la solución final se determina cuál fue la desición más común entre la muestra final de soluciones con respecto a cada arista. Por tanto, la arista $i$ se decide remover si más del 50% de las soluciones decidieron removerla, de igual manera para si se desea dejar. Podemos notar gracias a imágenes y resultados obtenidos, que aunque en algunos casos puede llegar a mostrar mejoras en cada iteración no es fiable, no determina la solución óptima y no hace tender a 0 la función de penalización en todos los casos. Podemos notar también que el factor aleatorio de generar la población inicial juega un importante papel porque en ejecuciones de casos distintos, relacionados o no, se obtienen resultados impredecibles.
+
+**Ejemplos de Resultados como Aproximación al Problema:**
+![](./genetic_simulation_1.png)
+![](./genetic_simulation_2.png)
+![](./genetic_simulation_iterative_1.png)
+![](./genetic_simulation_iterative_2.png)
 
 **Pseudocódigo:**
 ```
@@ -450,6 +460,39 @@ Es trivial comprobar que el subgrafo $H$ contruido existe para cualquier tripart
 Por la propiedad $2.$, se llega a que el subgrafo $H$ de $G'$ corresponde a una tripartición para los vértices de $G$ tal que un vértice $v_i$ está en una partición $c$ si el ciclo $C_i^c \in H$. La propiedad $3.$ asegura que los vértices adyacentes están en una partición diferente, por lo tanto, esto muestra que la tripartición correspondiente a $H$ es de hecho una coloración de $G$. Por lo tanto, $G$ es 3-coloreable si $G'$ contiene un subgrafo k-regular $H$. De esta forma se completa la demostración.□
 
 Una vez demostrado el teorema anterior, vemos que demostramos también que el problema enfrentado en este proyecto es $NP-completo$, esto dado que si lo reducimos para $k=3$, se cumple por el teorema anterior. Luego, dado ese subgrafo 3-regular que se asegura para un grafo arbitrario en caso de que lo tenga, bastaría con quitar las aristas necesarias para llegar a él como parte de la solución de la situación planteada, donde estará un subgrafo regular y posiblemente, otros nodos con grado $0$, lo cual corresponde con la validez de una solución buscada.
+
+### **2.5) Formalizando una aproximación para el problema:**
+Muchos problemas de importancia práctica son NP-completos, pero son demasiado relavantes como para abandonar su estudio simplemente porque no sabemos cómo encontrar una solución óptima en tiempo polinomial. Incluso si un problema es NP-completo, puede haber esperanza. Existen algunas vías para enfrentar la complejidad de dichos problemas. Primero, si las entradas reales son pequeñas, un algoritmo con tiempo de ejecución exponencial puede ser perfectamente satisfactorio. Segundo, podemos ser capaces de aislar casos especiales importantes que podemos resolver en tiempo polinómico. En tercer lugar, podríamos idear enfoques para encontrar soluciones casi óptimas en tiempo polinomial (ya sea en el peor de los casos o en el caso esperado). En la práctica, lo "casi óptimo" es a menudo lo suficientemente bueno. Llamamos a un algoritmo que devuelve soluciones casi óptimas un algoritmo de aproximación.
+
+Decimos que un algoritmo para un problema tiene una razón de aproximación de $\rho(n)$ si, para cualquier entrada de tamaño $n$, el costo $C$ de la solución hallada por el algoritmo está dentro de un factor de $\rho(n)$ del costo $C^*$ de una solución óptima: $max(\frac{C}{C^*}, \frac{C^*}{C}) \leq \rho(n)$.
+
+**Idea General de la Solución:** En este caso, proponemos un algoritmo de aproximación en tiempo polinomial tal que este pueda generar soluciones cercanas a la solución óptima de una instancia del problema con un error de aproximación formalmente acotado.
+
+La idea del algoritmo es, para un grafo arbitrario $G$ tal que se quiere determinar si este tiene algún subgrafo cúbico o no, determinar el subgrafo que tenga la mayor cantidad posible de nodos en un estado correcto (grado 0 o 3) y que se cumpla además, que se asegura la existencia de al menos un nodo con grado 3. Sea $G'$ el subgrafo de $G$ resultante de optimizar el criterio anterior, nótese que al asegurar la presencia de al menos un nodo de grado mayor o igual a 3, entonces, podemos acotar el costo óptimo resultante para $G'$ por $n-3$ como mínimo, ya que pudiésemos solamente dejar en el grafo las aristas que conecta al nodo con grado mayor o igual a 3 con 3 adyacentes cualesquiera a este. En dicho caso, existirían como nodos en estado correcto en el grafo, todos, excepto los adyacentes, que son 3, por lo tanto, como mínimo se obtendría de repuesta $n-3$. Es importante analizar que, en caso de que en el grafo $G$ inicial no hayan nodos con grado mayor o igual a 3 entonces no es posible obtener un subgrafo cuyos nodos todos sean de grado 3 o 0 sin quitar todas las aristas, pues no habría ninguno de grado 3, luego habría que llevarlos todos a grado 0, lo que implicaría quitar las aristas presentes.
+
+Ahora formalicemos la calidad de la aproximación propuesta. Asumamos que medimos la calidad de la aproximación en base de una instación cuya respuesta al problema de desición es verdadero y al problema de optimización sería $n$, ya que en caso contrario se tiene la situación donde se conoce de antemano la invalidez del grafo para obtener una solución óptima debido a la ausencia de nodos con grado 3.
+
+Denotemos como $f$, la función que representa el costo de una solución del problema de optimización planteado. Dado que conocemos que se asegura la presencia de un nodo de grado 3 en la aproximación resultante, el valor de costo de dicha función será de $f(G') \geq n-3$, donde $G'$ es el subgrafo asociado a un grafo $G$ donde se dejaron solamente las aristas asociadas al un nodo con grado mayor o igual a 3 conectando a 3 adyacentes cualesquiera de este. Luego, sea $G''$ el subgrado de $G$ tal que el valor $f(G'')$ es óptimo, el cual puede ser a lo sumo $n$ (en cuyo caso es verdadero el problema de desición). Tentativamente, $f(G'') \geq f(G')$, por lo tanto, teniendo en cuenta que estamos maximizando la función de costo dada tenemos que $\frac{f(G'')}{f(G')} = \frac{C*}{C}$, pero $\frac{f(G'')}{f(G')} = \frac{f(G'')}{n-3} \leq \frac{n}{n-3}$. Por lo tanto, si hacemos $\rho(n) = \frac{n}{n-3}$, entonces llegamos a que el algoritmo planteado anteriormente constituye formalmente una $\rho(n)$-aproximación del problema dado. Luego, podemos ver que la fracción $\frac{n}{n-3}$ nos permitirá acotar la calidad de la solución a partir de un valor fijo, es decir, si se toma por ejemplo $n$ mayor o igual a 6, se tiene que dicha fracción sería menor o igual a $2$, por lo que para grafos con 6 o más nodos, esta vía constituye una $2$-aproximación del problema planteado. Igualmente, para $n\geq 4$ contituye una $4$-aproximaxión.
+
+**Pseudocódigo:**
+```
+approx_solution(n, m, edges):
+    return n-3 if is_node_degree_3(n, m, edges) else 0
+
+is_node_degree_3(n, m, edges):
+    degrees = [0 for i in range(n)]
+    for i in range(m):
+        node1, node2 = edges[i]
+        degrees[node1] += 1
+        degrees[node2] += 1
+        if degrees[node1] >= 3 or degrees[node2] >= 3:
+            return True
+    return False
+```
+
+**Complejidad Temporal:**
+La complejidad temporal de la función $is\_node\_degree\_3$ es $O(n + m)$, ya que recorre todas las arista donde va actualizando un array de tamaño $n$ donde calcula para cada nodo del grafo su grado, y retorna True si existe alguna con grado mayor o igual a 3 y False en caso contrario, Luego, la función $approx\_solution$ llama a la anterior en una sola instrucción que tiene como costo la ejecución de dicha primera función, por lo cual la aproximación tiene como complejidad temporal temporal $O(n + m)$.
+
 ## **3) Implementación del proyecto:**
 El proyecto está dividido en tres secciones principales: Soluciones, Informe y Pruebas. Todas las implementaciones fueron realizadas con el lenguaje de programación $Python$. El punto de entrada para la ejecución del proyecto es el archivo $main.py$ en el directorio principal. Desde este se pueden ejecutar los scripts en las carpetas de *Soluciones* y *Pruebas* importando el archivo y los métodos específicos que se deseen ejecutar.
 

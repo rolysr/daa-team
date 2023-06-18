@@ -6,20 +6,24 @@ def metaheuristic_solution(n, m, edges):
     if m == 0 or is_valid_graph(n, m, edges, bitmask):
         return n
     else:
-        return metaheuristic_solve(n, m, edges, bitmask)
+        maximum = [0]
+        metaheuristic_solve(n, m, edges, bitmask, maximum)
+        return maximum[0]
 
-def metaheuristic_solve(n, m, edges, bitmask):
+def metaheuristic_solve(n, m, edges, bitmask, maximum):
     if bitmask == [False for i in range(m)]:
-        return False
+        return
     
     if is_valid_graph(n, m, edges, bitmask):
-        return True
+        maximum = [n]
+        return
     
     valid_edge_indexes = get_valid_indexes(bitmask)
     sorted_indexes_by_quality = get_sorted_indexes_by_quality(valid_edge_indexes, n, m, edges, bitmask)
     _, index = sorted_indexes_by_quality[0]
     bitmask[index] = False
-    return metaheuristic_solve(n, m, edges, bitmask)
+    maximum[0] = max(maximum[0], get_state_quality(n, m, edges, bitmask))
+    return metaheuristic_solve(n, m, edges, bitmask, maximum)
 
 def get_valid_indexes(bitmask):
     indexes = []
